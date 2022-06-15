@@ -1,0 +1,18 @@
+# BackEnd
+__pycache__
+*.pyc
+*~
+.idea
+.DS_Store
+.vscode
+db.sqlite3
+db.json
+/static
+venv
+media
+backend/.env
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

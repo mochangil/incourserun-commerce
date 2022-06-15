@@ -1,0 +1,33 @@
+version: '3'
+services:
+  backend:
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:
+      - /bin/bash
+      - -c
+      - |
+        python manage.py migrate
+        gunicorn --bind 0.0.0.0:8000 -k=gevent config.wsgi:application
+    expose:
+      - '8000'
+    volumes:
+      - static:/opt/backend/static
+    environment:
+      DJANGO_SETTINGS_MODULE: 'config.settings.prod'
+    restart: always
+  nginx:
+    image: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static:/static
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  static:
