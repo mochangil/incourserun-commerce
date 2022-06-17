@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from rest_framework import serializers
@@ -97,5 +98,55 @@ class UserSocialLoginSerializer(serializers.Serializer):
 
     def get_naver_user_data(self, code, redirect_uri):
         pass
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "username",
+            "nickname",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "is_register",
+            "gender",
+            "age",
+            "address",
+            "profile",
+            "created"
+        )
+
+
+class UserDetailUpdateDeleteSerializer(serializers.ModelSerializer):
+    is_superuser = serializers.BooleanField(read_only = True)
+    is_staff = serializers.BooleanField(read_only = True)
+    is_register = serializers.BooleanField(read_only = True)
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "username",
+            "nickname",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "is_register",
+            "gender",
+            "age",
+            "address",
+            "profile",
+            "created"
+        )
+    
+    def validate(self, data):
+        return data
+    
+    def update(self, instance, validated_data):
+       instance.save()
+       return instance
 
 
