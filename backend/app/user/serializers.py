@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from rest_framework import serializers
@@ -22,19 +23,40 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if attrs['state'] not in SocialKindChoices:
             raise ValidationError({'kind': '지원하지 않는 소셜 타입입니다.'})
 
-        attrs['social_user_id'] = self.get_social_user_id(attrs['code'], attrs['state'])
-
+        attrs['social_user_data'] = self.get_social_user_data(attrs['code'], attrs['state'])
         return attrs
 
     @transaction.atomic
     def create(self, validated_data):
-        social_user_id = validated_data['social_user_id']
+        social_user_id = validated_data['social_user_data']['id']
+        kakao_account = validated_data['social_user_data']['kakao_account']
         state = validated_data['state']
         user, created = User.objects.get_or_create(email=f'{social_user_id}@{state}.social', defaults={
-            'password': make_password(None),
+            'password': make_password(None)
         })
 
         if created:
+            # user 데이터 추가
+            user.username = kakao_account['email']
+            user.nickname = kakao_account['profile']['nickname']
+            user.profile = kakao_account['profile']['profile_image_url']
+            if kakao_account['has_gender']:
+                user.gender = kakao_account['gender']
+            if kakao_account['has_age_range']:
+                age = kakao_account['age_range']
+                if age == '1~9':
+                    pass
+                elif age == '10~14' or age == '15~19':
+                    user.age = 'teen'
+                elif age == '20~29':
+                    user.age = 'twenty'
+                elif age == '30~39':
+                    user.age = 'thirty'
+                elif age == '40~49':
+                    user.age = 'forty'
+                else:
+                    user.age = 'fifty'
+            user.save()
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
@@ -45,12 +67,12 @@ class UserSocialLoginSerializer(serializers.Serializer):
             'is_register': user.is_register,
         }
 
-    def get_social_user_id(self, code, state):
-        redirect_uri = settings.SOCIAL_REDIRECT_URL
-        social_user_id = getattr(self, f'get_{state}_user_id')(code, redirect_uri)
-        return social_user_id
+    def get_social_user_data(self, code, state):
+        redirect_uri = settings.KAKAO_REDIRECT_URL
+        social_user_data = getattr(self, f'get_{state}_user_data')(code, redirect_uri)
+        return social_user_data
 
-    def get_kakao_user_id(self, code, redirect_uri):
+    def get_kakao_user_data(self, code, redirect_uri):
         url = 'https://kauth.kakao.com/oauth/token'
         data = {
             'grant_type': 'authorization_code',
@@ -72,8 +94,59 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if not response.ok:
             raise ValidationError('KAKAO ME API ERROR')
         data = response.json()
+        return data
 
-        return data['id']
-
-    def get_naver_user_id(self, code, redirect_uri):
+    def get_naver_user_data(self, code, redirect_uri):
         pass
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "username",
+            "nickname",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "is_register",
+            "gender",
+            "age",
+            "address",
+            "profile",
+            "created"
+        )
+
+
+class UserDetailUpdateDeleteSerializer(serializers.ModelSerializer):
+    is_superuser = serializers.BooleanField(read_only = True)
+    is_staff = serializers.BooleanField(read_only = True)
+    is_register = serializers.BooleanField(read_only = True)
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "username",
+            "nickname",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "is_register",
+            "gender",
+            "age",
+            "address",
+            "profile",
+            "created"
+        )
+    
+    def validate(self, data):
+        return data
+    
+    def update(self, instance, validated_data):
+       instance.save()
+       return instance
+
+

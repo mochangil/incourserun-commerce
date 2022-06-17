@@ -28,12 +28,31 @@ class UserManager(DjangoUserManager):
         return self._create_user(username, password, **extra_fields)
 
 
+class GenderChoices(models.TextChoices):
+    MALE = 'male','남성' 
+    FEMALE = 'female', '여성'
+
+class AgeChoices(models.TextChoices):
+    TEEN = 'teen', '10대'
+    TWENTY = 'twenty', '20대'
+    THIRTY = 'thirty', '30대'
+    FORTY = 'forty', '40대'
+    FIFTY = 'fifty', '50대 이상'
+
+
 class User(AbstractUser):
     first_name = None
     last_name = None
 
+    nickname = models.CharField(verbose_name="닉네임", max_length=10, null=True, blank=True)
     email = models.EmailField(verbose_name="이메일", unique=True)
     phone = models.CharField(verbose_name="휴대폰", max_length=11, null=True, blank=True)
+    gender = models.CharField(verbose_name="성별", max_length=6, choices=GenderChoices.choices, blank=True)
+    age = models.CharField(verbose_name="연령대", max_length=6, choices=AgeChoices.choices, blank=True)
+    address = models.CharField(verbose_name="주소", max_length=1000, blank=True)
+    profile = models.ImageField(verbose_name="프로필사진", upload_to=None, null=True, blank=True)
+    is_register = models.BooleanField(verbose_name="등록여부", default=False)
+    created = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
 
     USERNAME_FIELD = "username"
 
