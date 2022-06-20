@@ -9,4 +9,6 @@ urlpatterns = [
     path('/social_login', views.UserSocialLoginView.as_view()),
     path('/login/kakao', views.kakao_login),
     path('/login/kakao/callback', views.kakao_callback),
+    path('/cart', views.CartListCreateView.as_view()),
+    path('/cart/<int:pk>', views.CartDetailUpdateDeleteView.as_view())
 ]

@@ -6,8 +6,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from app.user.models import User, Social, SocialKindChoices
+from app.user.models import User, Social, SocialKindChoices, Cart
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -149,4 +148,9 @@ class UserDetailUpdateDeleteSerializer(serializers.ModelSerializer):
        instance.save()
        return instance
 
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = '__all__'
 
