@@ -50,3 +50,7 @@ class SocialAdmin(admin.ModelAdmin):
     """Review Admin Definition"""
 
     list_display = ("user","kind")
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ("user", "product", "amount")
