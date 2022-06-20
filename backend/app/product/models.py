@@ -23,7 +23,7 @@ class Product(models.Model):
         verbose_name = "상품"
         verbose_name_plural = verbose_name
     
-    def __str(self):
+    def __str__(self):
         return self.name
 
 class Hashtag(models.Model):
@@ -33,5 +33,5 @@ class Hashtag(models.Model):
         verbose_name = "해시태그"
         verbose_name_plural = verbose_name
     
-    def __str(self):
+    def __str__(self):
         return self.name
