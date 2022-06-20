@@ -24,7 +24,7 @@ class Order(models.Model):
     shipping_zipcode = models.CharField(verbose_name="우편번호", max_length=7)
     shipping_address = models.CharField(verbose_name="배송주소", max_length=1000)
     shipping_address_detail = models.CharField(verbose_name="배송상세주소", max_length=1000)
-    shipping_request = models.CharField(verbose_name="배송요청사항", max_length=300, null=True)
+    shipping_request = models.CharField(verbose_name="배송요청사항", max_length=300, null=True, blank=True)
     shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
