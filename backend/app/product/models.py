@@ -18,5 +18,19 @@ class Product(models.Model):
     hashtags = models.ManyToManyField("Hashtag", related_name = "products", blank=True)
     created = models.DateTimeField(verbose_name="등록일시", auto_now_add=True)
 
+    class Meta:
+        verbose_name = "상품"
+        verbose_name_plural = verbose_name
+    
+    def __str(self):
+        return self.name
+
 class Hashtag(models.Model):
     name = models.CharField(verbose_name="이름", max_length=20)
+
+    class Meta:
+        verbose_name = "해시태그"
+        verbose_name_plural = verbose_name
+    
+    def __str(self):
+        return self.name
