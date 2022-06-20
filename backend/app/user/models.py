@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 class UserManager(DjangoUserManager):
@@ -44,12 +45,12 @@ class User(AbstractUser):
     first_name = None
     last_name = None
 
-    nickname = models.CharField(verbose_name="닉네임", max_length=10, null=True, blank=True)
+    nickname = models.CharField(verbose_name="닉네임", max_length=10)
     email = models.EmailField(verbose_name="이메일", unique=True)
     phone = models.CharField(verbose_name="휴대폰", max_length=11, null=True, blank=True)
-    gender = models.CharField(verbose_name="성별", max_length=6, choices=GenderChoices.choices, blank=True)
-    age = models.CharField(verbose_name="연령대", max_length=6, choices=AgeChoices.choices, blank=True)
-    address = models.CharField(verbose_name="주소", max_length=1000, blank=True)
+    gender = models.CharField(verbose_name="성별", max_length=6, choices=GenderChoices.choices, null=True, blank=True)
+    age = models.CharField(verbose_name="연령대", max_length=6, choices=AgeChoices.choices, null=True, blank=True)
+    address = models.CharField(verbose_name="주소", max_length=1000, null=True, blank=True)
     profile = models.ImageField(verbose_name="프로필사진", upload_to=None, null=True, blank=True)
     is_register = models.BooleanField(verbose_name="등록여부", default=False)
     created = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
@@ -80,4 +81,14 @@ class Social(models.Model):
 
     class Meta:
         verbose_name = '소셜'
+        verbose_name_plural = verbose_name
+
+
+class Cart(models.Model):
+    user = models.ForeignKey('user.User', related_name="carts", on_delete=models.CASCADE)
+    product = models.ForeignKey('product.Product', related_name="carts", on_delete=models.CASCADE)
+    amount = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = "장바구니"
         verbose_name_plural = verbose_name
