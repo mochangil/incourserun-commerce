@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 class CategoryChoices(models.TextChoices):
@@ -11,8 +12,8 @@ class CategoryChoices(models.TextChoices):
 class Product(models.Model):
     name = models.CharField(verbose_name="상품명", max_length=100)
     category = models.CharField(verbose_name="분류", max_length=12, choices=CategoryChoices.choices)
-    capacity = models.IntegerField(verbose_name="용량")
-    price = models.IntegerField(verbose_name="가격")
+    capacity = models.IntegerField(verbose_name="용량", validators=[MinValueValidator(1)])
+    price = models.IntegerField(verbose_name="가격", validators=[MinValueValidator(0)])
     photo = models.CharField(verbose_name="상품이미지", max_length=1000)
     detail = models.CharField(verbose_name="상세이미지", max_length=1000)
     hashtags = models.ManyToManyField("Hashtag", related_name = "products", blank=True)
