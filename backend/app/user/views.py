@@ -1,10 +1,11 @@
 import requests
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import ValidationError
-from app.user.serializers import UserSocialLoginSerializer, UserListSerializer, UserDetailUpdateDeleteSerializer
+from app.user.serializers import UserSocialLoginSerializer, UserListSerializer, UserDetailUpdateDeleteSerializer, CartSerializer
 from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from .models import Cart
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -26,6 +27,16 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     User = get_user_model()
     queryset = User.objects.all()
     serializer_class = UserDetailUpdateDeleteSerializer
+
+
+class CartListCreateView(ListCreateAPIView):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+
+class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
 
 
 def kakao_login(request):
