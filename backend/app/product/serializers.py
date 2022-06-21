@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product, Hashtag
+from ..review.serializers import ReviewSerializer
 
 
 class HashtagSerializer(serializers.ModelSerializer):
@@ -9,12 +10,26 @@ class HashtagSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    avg_rating = serializers.FloatField(read_only = True)
-    review_count = serializers.IntegerField(read_only = True)
-    hashtags = HashtagSerializer(many=True)
+    avg_rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
+    hashtags = HashtagSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = (
+            "id",
+            "name",
+            "category",
+            "capacity",
+            "price",
+            "photo",
+            "detail",
+            "hashtags",
+            "avg_rating",
+            "review_count",
+            "reviews",
+            "created"
+        )
 
 
