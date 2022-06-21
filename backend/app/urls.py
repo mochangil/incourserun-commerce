@@ -4,5 +4,6 @@ urlpatterns = [
     path("example", include("app.example.urls")),
     path("user", include("app.user.urls")),
     path("product", include("app.product.urls")),
-    path("order", include("app.order.urls"))
+    path("order", include("app.order.urls")),
+    path('review', include("app.review.urls"))
 ]
