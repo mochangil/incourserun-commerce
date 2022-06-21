@@ -7,6 +7,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from app.user.models import User, Social, SocialKindChoices, Cart
+from app.order.serializers import OrderSerializer
+from app.review.serializers import ReviewSerializer
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -99,7 +101,27 @@ class UserSocialLoginSerializer(serializers.Serializer):
         pass
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class SocialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Social
+        fields = '__all__'
+
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = '__all__'
+
+
+class UserSerializer(serializers.ModelSerializer):
+    is_superuser = serializers.BooleanField(read_only = True)
+    is_staff = serializers.BooleanField(read_only = True)
+    is_register = serializers.BooleanField(read_only = True)
+    social = SocialSerializer()
+    carts = CartSerializer(many=True, read_only=True)
+    orders = OrderSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -115,48 +137,12 @@ class UserListSerializer(serializers.ModelSerializer):
             "age",
             "address",
             "profile",
-            "created"
+            "created",
+            "social",
+            "carts",
+            "orders",
+            "reviews"
         )
 
 
-class UserDetailUpdateDeleteSerializer(serializers.ModelSerializer):
-    is_superuser = serializers.BooleanField(read_only = True)
-    is_staff = serializers.BooleanField(read_only = True)
-    is_register = serializers.BooleanField(read_only = True)
-
-    class Meta:
-        model = get_user_model()
-        fields = (
-            "username",
-            "nickname",
-            "email",
-            "is_active",
-            "is_staff",
-            "is_superuser",
-            "is_register",
-            "gender",
-            "age",
-            "address",
-            "profile",
-            "created"
-        )
-    
-    def validate(self, data):
-        return data
-    
-    def update(self, instance, validated_data):
-       instance.save()
-       return instance
-
-
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = '__all__'
-
-
-class SocialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Social
-        fields = '__all__'
 
