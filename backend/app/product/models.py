@@ -14,9 +14,9 @@ class Product(models.Model):
     category = models.CharField(verbose_name="분류", max_length=12, choices=CategoryChoices.choices)
     capacity = models.IntegerField(verbose_name="용량", validators=[MinValueValidator(1)])
     price = models.IntegerField(verbose_name="가격", validators=[MinValueValidator(0)])
-    photo = models.CharField(verbose_name="상품이미지", max_length=1000)
-    detail = models.CharField(verbose_name="상세이미지", max_length=1000)
-    hashtags = models.ManyToManyField("Hashtag", related_name = "products", blank=True)
+    photo = models.CharField(verbose_name="상품이미지", max_length=1000, null=True, blank=True)
+    detail = models.CharField(verbose_name="상세이미지", max_length=1000, null=True, blank=True)
+    hashtags = models.ManyToManyField("Hashtag", related_name = "products", null=True, blank=True)
     created = models.DateTimeField(verbose_name="등록일시", auto_now_add=True)
 
     class Meta:
