@@ -19,7 +19,13 @@ class ProductListCreateView(ListCreateAPIView):
 
 
 class ProductDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
+    avg_rating_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(avg=Avg('rating')).values('avg')
+    review_count_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(cnt=Count('id')).values('cnt')
+
+    queryset = Product.objects.annotate(
+        avg_rating = Coalesce(Subquery(avg_rating_subquery), 0.0),
+        review_count = Coalesce(Subquery(review_count_subquery), 0)
+    )
     serializer_class = ProductSerializer
 
 
