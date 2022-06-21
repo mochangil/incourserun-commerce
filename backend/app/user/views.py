@@ -20,7 +20,7 @@ class UserSocialLoginView(CreateAPIView):
 
 class UserListView(ListAPIView):
     User = get_user_model()
-    queryset = User.objects.all().prefetch_related(Prefetch("carts", "orders", "reviews"))
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 
 

@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from app.user.models import User, Social, SocialKindChoices, Cart
 from app.order.serializers import OrderSerializer
 from app.review.serializers import ReviewSerializer
+from app.product.serializers import ProductSerializer
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -108,9 +109,16 @@ class SocialSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    product = ProductSerializer(read_only=True)
+
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields = (
+            'id',
+            'user',
+            'product'
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
