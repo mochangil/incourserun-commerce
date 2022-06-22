@@ -21,7 +21,9 @@ class CustomUserAdmin(UserAdmin):
             "is_register",
             "gender",
             "age",
+            "zipcode",
             "address",
+            "address_detail",
             "profile",
             )}
         ),
@@ -39,7 +41,9 @@ class CustomUserAdmin(UserAdmin):
         "is_register",
         "gender",
         "age",
+        "zipcode",
         "address",
+        "address_detail",
         "profile",
         "created"
     )

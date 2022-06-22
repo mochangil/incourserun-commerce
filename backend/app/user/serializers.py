@@ -126,7 +126,7 @@ class UserSerializer(serializers.ModelSerializer):
     is_superuser = serializers.BooleanField(read_only = True)
     is_staff = serializers.BooleanField(read_only = True)
     is_register = serializers.BooleanField(read_only = True)
-    social = SocialSerializer()
+    social = SocialSerializer(read_only=True)
     carts = CartSerializer(many=True, read_only=True)
     orders = OrderSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
@@ -144,7 +144,9 @@ class UserSerializer(serializers.ModelSerializer):
             "is_register",
             "gender",
             "age",
+            "zipcode",
             "address",
+            "address_detail",
             "profile",
             "created",
             "social",
