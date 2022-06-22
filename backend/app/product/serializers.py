@@ -23,6 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "category",
             "capacity",
             "price",
+            "description",
             "photo",
             "detail",
             "hashtags",
