@@ -17,7 +17,7 @@ class Product(models.Model):
     description = models.CharField(verbose_name="상품설명", max_length=1000, null=True, blank=True)
     product_img = models.ImageField(verbose_name="상품이미지", upload_to=None, null=True, blank=True)
     detail_img = models.ImageField(verbose_name="상세이미지", upload_to=None, null=True, blank=True)
-    hashtags = models.ManyToManyField("Hashtag", related_name = "products", null=True, blank=True)
+    hashtags = models.ManyToManyField("Hashtag", related_name = "products", blank=True)
     created = models.DateTimeField(verbose_name="등록일시", auto_now_add=True)
 
     class Meta:
