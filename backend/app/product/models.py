@@ -3,11 +3,11 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 class CategoryChoices(models.TextChoices):
-    BATHNSHAMPOO = 'bathnshampoo', '바스&샴푸'
-    OIL = 'oil', '오일'
-    LOTION = 'lotion', '로션'
-    CREAM = 'cream', '크림'
-    POWDERLOTION = 'powderlotion', '파우더로션'
+    BATHNSHAMPOO = '바스 & 샴푸', '바스 & 샴푸'
+    OIL = '오일', '오일'
+    LOTION = '로션', '로션'
+    CREAM = '크림', '크림'
+    POWDERLOTION = '파우더로션', '파우더로션'
 
 class Product(models.Model):
     name = models.CharField(verbose_name="상품명", max_length=100)
