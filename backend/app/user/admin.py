@@ -13,8 +13,8 @@ class CustomUserAdmin(UserAdmin):
             {'fields': (
             "username",
             "password",
-            'nickname',
-            'email', 
+            "nickname",
+            "email", 
             "is_active",
             "is_staff",
             "is_superuser",
