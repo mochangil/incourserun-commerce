@@ -6,7 +6,9 @@ from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django_filters import rest_framework as filters
 from .models import Cart, Social
+from .filters import UserFilter
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -22,6 +24,8 @@ class UserListView(ListAPIView):
     User = get_user_model()
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = UserFilter
 
 
 class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
