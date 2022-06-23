@@ -7,6 +7,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from .models import Review, Photo, Reply
 from .serializers import ReviewSerializer, PhotoSerializer, ReplySerializer
 from .filters import ReviewFilter
+from .paginations import ReviewPagination
 
 
 # Create your views here.
@@ -16,6 +17,7 @@ class ReviewListCreateView(ListCreateAPIView):
     serializer_class = ReviewSerializer
     filter_backends = [filters.DjangoFilterBackend, OrderingFilter]
     filterset_class = ReviewFilter
+    pagination_class = ReviewPagination
 
 
 class ReviewDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
