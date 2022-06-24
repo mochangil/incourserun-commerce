@@ -41,7 +41,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             # user 데이터 추가
             user.username = kakao_account['email']
             user.nickname = kakao_account['profile']['nickname']
-            user.profile = kakao_account['profile']['profile_image_url']
+            user.profile_img = kakao_account['profile']['profile_image_url']
             if kakao_account['has_gender']:
                 user.gender = kakao_account['gender']
             if kakao_account['has_age_range']:
@@ -97,6 +97,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if not response.ok:
             raise ValidationError('KAKAO ME API ERROR')
         data = response.json()
+        print(data)
         return data
 
     def get_naver_user_data(self, code, redirect_uri):
@@ -148,7 +149,7 @@ class UserSerializer(serializers.ModelSerializer):
             "zipcode",
             "address",
             "address_detail",
-            "profile",
+            "profile_img",
             "created",
             "social",
             "carts",

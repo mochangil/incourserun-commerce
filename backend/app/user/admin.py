@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
             "zipcode",
             "address",
             "address_detail",
-            "profile",
+            "profile_img",
             )}
         ),
     )
@@ -44,7 +44,7 @@ class CustomUserAdmin(UserAdmin):
         "zipcode",
         "address",
         "address_detail",
-        "profile",
+        "profile_img",
         "created"
     )
 
