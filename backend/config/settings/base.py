@@ -119,6 +119,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/media/"
 
 # AUTH_USER_MODEL
 AUTH_USER_MODEL = "user.User"
@@ -202,8 +203,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 # S3
-AWS_REGION = "aws-region-name"
-AWS_STORAGE_BUCKET_NAME = ""
+AWS_REGION = "ap-northeast-2"
+AWS_STORAGE_BUCKET_NAME = "incourserun-commerce"
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=864000"}
 AWS_S3_FILE_OVERWRITE = False
