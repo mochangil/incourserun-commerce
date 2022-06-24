@@ -162,6 +162,10 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
+    ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
@@ -210,10 +214,11 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 MEDIAFILES_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
 
+USER_ROOT = "http://127.0.0.1:8000/v1/users"
 # KAKAO
 KAKAO_CLIENT_ID = 'e11ec334d1ea05b35cb51cc978c3cd1c'
 KAKAO_CLIENT_SECRET = 'S1GWsxA2HkAtkZrTmKSCSGWI64eqlS06'
-KAKAO_REDIRECT_URL = "http://127.0.0.1:8000/v1/user/login/kakao/callback"
+KAKAO_REDIRECT_URL = f"{USER_ROOT}/login/kakao/callback"
 
 '''
 KAKAO LOGIN URL

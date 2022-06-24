@@ -62,6 +62,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
+        print("token:", refresh.access_token)
 
         return {
             'access': refresh.access_token,

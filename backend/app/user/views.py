@@ -56,7 +56,7 @@ class SocialDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 
 def kakao_login(request):
     client_id = settings.KAKAO_CLIENT_ID
-    redirect_uri = "http://127.0.0.1:8000/v1/user/login/kakao/callback"
+    redirect_uri = f"{settings.USER_ROOT}/login/kakao/callback"
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
     )
@@ -65,7 +65,7 @@ def kakao_callback(request):
     code = request.GET.get("code")
     redirect_uri = settings.KAKAO_REDIRECT_URL
 
-    url = "http://127.0.0.1:8000/v1/user/social_login"
+    url = f"{settings.USER_ROOT}/social_login"
     data = {
         'code': code,
         'state':'kakao',
@@ -74,4 +74,4 @@ def kakao_callback(request):
     response = requests.post(url=url, data=data)
     if not response.ok:
         raise ValidationError()
-    return redirect("http://127.0.0.1:8000/v1/user")
+    return redirect(settings.USER_ROOT)
