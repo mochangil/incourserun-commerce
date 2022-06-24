@@ -62,7 +62,7 @@ def kakao_login(request):
     )
     
 def kakao_callback(request):
-    code = request.GET.get("code")
+    print(code)
     redirect_uri = settings.KAKAO_REDIRECT_URL
 
     url = f"{settings.USER_ROOT}/social_login"
