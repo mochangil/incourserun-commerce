@@ -112,7 +112,12 @@ class SocialSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-    product = ProductSerializer(read_only=True)
+
+    def create(self, validated_data):
+        cart, created = Cart.objects.get_or_create(user=validated_data['user'], product=validated_data['product'])
+        cart.amount = validated_data['amount']
+        cart.save()
+        return cart
 
     class Meta:
         model = Cart
