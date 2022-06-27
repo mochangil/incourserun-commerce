@@ -6,7 +6,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from .models import Review, Photo, Reply
 from .serializers import ReviewSerializer, PhotoSerializer, ReplySerializer
-from .filters import ReviewFilter
+from .filters import ReviewFilter, PhotoFilter, ReplyFilter
 from .paginations import ReviewPagination
 
 
@@ -28,6 +28,8 @@ class ReviewDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class PhotoListCreateView(ListCreateAPIView):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = PhotoFilter
 
 
 class PhotoDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
@@ -38,6 +40,8 @@ class PhotoDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class ReplyListCreateView(ListCreateAPIView):
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = ReplyFilter
 
 
 class ReplyDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
