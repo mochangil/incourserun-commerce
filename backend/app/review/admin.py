@@ -9,7 +9,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'product',
         'rating',
         'content',
-        'created'
+        'created_at'
     )
 
 @admin.register(models.Photo)
@@ -24,6 +24,6 @@ class ReplyAdmin(admin.ModelAdmin):
     list_display = (
         'review',
         'content',
-        'created'
+        'created_at'
     )
 
