@@ -30,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "avg_rating",
             "review_count",
             "reviews",
-            "created"
+            "created_at"
         )
 
 
