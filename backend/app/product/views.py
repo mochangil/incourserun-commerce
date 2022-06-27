@@ -32,13 +32,3 @@ class ProductDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
         review_count = Coalesce(Subquery(review_count_subquery), 0)
     )
     serializer_class = ProductSerializer
-
-
-class HashtagListCreateView(ListCreateAPIView):
-    queryset = Hashtag.objects.all()
-    serializer_class = HashtagSerializer
-
-
-class HashtagDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Hashtag.objects.all()
-    serializer_class = HashtagSerializer
