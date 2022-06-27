@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
 from .models import Cart, Social
-from .filters import UserFilter
+from .filters import UserFilter, CartFilter
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -37,21 +37,13 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class CartListCreateView(ListCreateAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = CartFilter
 
 
 class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-
-
-class SocialListCreateView(ListCreateAPIView):
-    queryset = Social.objects.all()
-    serializer_class = SocialSerializer
-
-
-class SocialDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Social.objects.all()
-    serializer_class = SocialSerializer
 
 
 def kakao_login(request):

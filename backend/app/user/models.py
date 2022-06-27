@@ -30,15 +30,15 @@ class UserManager(DjangoUserManager):
 
 
 class GenderChoices(models.TextChoices):
-    MALE = 'male','남성' 
-    FEMALE = 'female', '여성'
+    MALE = '남성','남성' 
+    FEMALE = '여성', '여성'
 
 class AgeChoices(models.TextChoices):
-    TEEN = 'teen', '10대'
-    TWENTY = 'twenty', '20대'
-    THIRTY = 'thirty', '30대'
-    FORTY = 'forty', '40대'
-    FIFTY = 'fifty', '50대 이상'
+    TEEN = '10대', '10대'
+    TWENTY = '20대', '20대'
+    THIRTY = '30대', '30대'
+    FORTY = '40대', '40대'
+    OVER_FIFTY = '50대 이상', '50대 이상'
 
 
 class User(AbstractUser):
@@ -53,9 +53,9 @@ class User(AbstractUser):
     zipcode = models.CharField(verbose_name="우편번호", max_length=7, null=True, blank=True)
     address = models.CharField(verbose_name="주소", max_length=1000, null=True, blank=True)
     address_detail = models.CharField(verbose_name="상세주소", max_length=1000, null=True, blank=True)
-    profile = models.ImageField(verbose_name="프로필사진", upload_to=None, null=True, blank=True)
+    profile_img = models.ImageField(verbose_name="프로필사진", upload_to='profile', null=True, blank=True)
     is_register = models.BooleanField(verbose_name="등록여부", default=False)
-    created = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
 
     USERNAME_FIELD = "username"
 
@@ -89,8 +89,11 @@ class Social(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey('user.User', related_name="carts", on_delete=models.CASCADE)
     product = models.ForeignKey('product.Product', related_name="carts", on_delete=models.CASCADE)
-    amount = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
+    quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)], default=1)
 
     class Meta:
         verbose_name = "장바구니"
         verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product'),
+        ]

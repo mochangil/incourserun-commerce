@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
             "zipcode",
             "address",
             "address_detail",
-            "profile",
+            "profile_img",
             )}
         ),
     )
@@ -44,8 +44,8 @@ class CustomUserAdmin(UserAdmin):
         "zipcode",
         "address",
         "address_detail",
-        "profile",
-        "created"
+        "profile_img",
+        "created_at"
     )
 
 @admin.register(models.Social)
@@ -57,4 +57,4 @@ class SocialAdmin(admin.ModelAdmin):
 
 @admin.register(models.Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ("user", "product", "amount")
+    list_display = ("user", "product", "quantity")
