@@ -3,6 +3,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
+from django.core.files import File
+from urllib.request import urlopen
+from tempfile import NamedTemporaryFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -41,7 +44,6 @@ class UserSocialLoginSerializer(serializers.Serializer):
             # user 데이터 추가
             user.username = kakao_account['email']
             user.nickname = kakao_account['profile']['nickname']
-            user.profile_img = kakao_account['profile']['profile_image_url']
             if kakao_account['has_gender']:
                 user.gender = kakao_account['gender']
             if kakao_account['has_age_range']:
@@ -58,7 +60,15 @@ class UserSocialLoginSerializer(serializers.Serializer):
                     user.age = 'forty'
                 else:
                     user.age = 'fifty'
+
+            # 프로필 이미지 저장
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
+            img_temp.flush()
+            user.profile_img.save(f'profile{user.pk}.jpg', File(img_temp))
             user.save()
+
+            # Social 정보 저장
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
