@@ -13,7 +13,6 @@ class ProductSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)
     review_count = serializers.IntegerField(read_only=True)
     hashtags = HashtagSerializer(many=True, read_only=True)
-    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -29,8 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "hashtags",
             "avg_rating",
             "review_count",
-            "reviews",
-            "created"
+            "created_at"
         )
 
 

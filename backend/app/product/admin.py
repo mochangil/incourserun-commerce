@@ -11,7 +11,7 @@ class ProductAdmin(admin.ModelAdmin):
         'description',
         'product_img',
         'detail_img',
-        'created',
+        'created_at',
     )
 
 
