@@ -46,16 +46,6 @@ class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     serializer_class = CartSerializer
 
 
-class SocialListCreateView(ListCreateAPIView):
-    queryset = Social.objects.all()
-    serializer_class = SocialSerializer
-
-
-class SocialDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Social.objects.all()
-    serializer_class = SocialSerializer
-
-
 def kakao_login(request):
     client_id = settings.KAKAO_CLIENT_ID
     redirect_uri = f"{settings.USER_ROOT}/login/kakao/callback"
