@@ -3,17 +3,17 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 class ShippingStatusChoices(models.TextChoices):
-    PAID = 'paid', '결제완료'
-    READY = 'ready', '상품준비중'
-    SHIPPING = 'shipping', '배송중'
-    SHIPPED = 'shipped', '배송완료'
+    PAID = '결제완료', '결제완료'
+    READY = '상품준비중', '상품준비중'
+    SHIPPING = '배송중', '배송중'
+    SHIPPED = '배송완료', '배송완료'
 
 class PayMethodChoices(models.TextChoices):
-    CARD = 'card', '신용카드'
+    CARD = '신용카드', '신용카드'
 
 class PayStatusChoices(models.TextChoices):
-    PAID = 'paid', '결제완료'
-    CANCELLED = 'cancelled', '결제취소'
+    PAID = '결제완료', '결제완료'
+    CANCELLED = '결제취소', '결제취소'
 
 
 class Order(models.Model):
