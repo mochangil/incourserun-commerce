@@ -30,15 +30,15 @@ class UserManager(DjangoUserManager):
 
 
 class GenderChoices(models.TextChoices):
-    MALE = 'male','남성' 
-    FEMALE = 'female', '여성'
+    MALE = '남성','남성' 
+    FEMALE = '여성', '여성'
 
 class AgeChoices(models.TextChoices):
-    TEEN = 'teen', '10대'
-    TWENTY = 'twenty', '20대'
-    THIRTY = 'thirty', '30대'
-    FORTY = 'forty', '40대'
-    FIFTY = 'fifty', '50대 이상'
+    TEEN = '10대', '10대'
+    TWENTY = '20대', '20대'
+    THIRTY = '30대', '30대'
+    FORTY = '40대', '40대'
+    OVER_FIFTY = '50대 이상', '50대 이상'
 
 
 class User(AbstractUser):
