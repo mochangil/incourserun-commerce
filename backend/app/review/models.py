@@ -7,7 +7,7 @@ class Review(models.Model):
     product = models.ForeignKey('product.Product', related_name="reviews", on_delete=models.CASCADE)
     rating = models.IntegerField(verbose_name="별점", validators=[MinValueValidator(1), MaxValueValidator(5)])
     content = models.CharField(verbose_name="내용", max_length = 1000, null=True, blank=True)
-    created = models.DateTimeField(verbose_name="작성일시", auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name="작성일시", auto_now_add=True)
 
     class Meta:
         verbose_name = "리뷰"
@@ -26,7 +26,7 @@ class Photo(models.Model):
 class Reply(models.Model):
     review = models.OneToOneField('review.Review', related_name="reply", on_delete=models.CASCADE)
     content = models.CharField(verbose_name="내용", max_length = 1000)
-    created = models.DateTimeField(verbose_name="작성일시", auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name="작성일시", auto_now_add=True)
 
     class Meta:
         verbose_name = "리뷰 답글"

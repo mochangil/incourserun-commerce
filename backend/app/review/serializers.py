@@ -28,7 +28,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'product',
             'rating',
             'content',
-            'created',
+            'created_at',
             'photos',
             'reply',
             'photo_count'
