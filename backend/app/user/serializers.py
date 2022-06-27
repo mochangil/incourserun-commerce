@@ -125,7 +125,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         cart, created = Cart.objects.get_or_create(user=validated_data['user'], product=validated_data['product'])
-        cart.amount = validated_data['amount']
+        cart.quantity = validated_data['quantity']
         cart.save()
         return cart
 
@@ -135,7 +135,7 @@ class CartSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'product',
-            'amount'
+            'quantity'
         )
 
 
@@ -165,7 +165,7 @@ class UserSerializer(serializers.ModelSerializer):
             "address",
             "address_detail",
             "profile_img",
-            "created",
+            "created_at",
             "social",
             "carts",
             "orders",

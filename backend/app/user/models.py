@@ -55,7 +55,7 @@ class User(AbstractUser):
     address_detail = models.CharField(verbose_name="상세주소", max_length=1000, null=True, blank=True)
     profile_img = models.ImageField(verbose_name="프로필사진", upload_to='profile', null=True, blank=True)
     is_register = models.BooleanField(verbose_name="등록여부", default=False)
-    created = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
 
     USERNAME_FIELD = "username"
 
@@ -89,7 +89,7 @@ class Social(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey('user.User', related_name="carts", on_delete=models.CASCADE)
     product = models.ForeignKey('product.Product', related_name="carts", on_delete=models.CASCADE)
-    amount = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)], default=1)
+    quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)], default=1)
 
     class Meta:
         verbose_name = "장바구니"
