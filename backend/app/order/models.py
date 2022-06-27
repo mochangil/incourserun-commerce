@@ -18,7 +18,7 @@ class PayStatusChoices(models.TextChoices):
 
 class Order(models.Model):
     user = models.ForeignKey('user.User', related_name="orders", on_delete = models.CASCADE)
-    created = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
     shipping_name = models.CharField(verbose_name="수령인", max_length=10)
     shipping_phone = models.CharField(verbose_name="전화번호", max_length=13)
     shipping_zipcode = models.CharField(verbose_name="우편번호", max_length=7)
@@ -40,7 +40,7 @@ class Order(models.Model):
 class OrderProduct(models.Model):
     order = models.ForeignKey('order.Order', related_name="order_products", on_delete=models.CASCADE)
     product = models.ForeignKey('product.Product', related_name="order_products", on_delete=models.CASCADE)
-    amount = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
+    quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name = "주문-상품"

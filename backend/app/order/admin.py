@@ -6,7 +6,7 @@ from . import models
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'user',
-        'created',
+        'created_at',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',
