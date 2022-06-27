@@ -19,7 +19,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user',
-            'created',
+            'created_at',
             'shipping_name',
             'shipping_phone',
             'shipping_zipcode',
@@ -32,6 +32,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'pay_status',
             'total_amount',
             'delivery_fee',
+            'is_cancelled',
             'order_products'
         )
 
