@@ -16,7 +16,7 @@ class Review(models.Model):
 
 class Photo(models.Model):
     review = models.ForeignKey('review.Review', related_name="photos", on_delete=models.CASCADE)
-    img = models.ImageField(verbose_name="이미지", upload_to=None)
+    img = models.ImageField(verbose_name="이미지", upload_to="review")
 
     class Meta:
         verbose_name = "리뷰 사진"
