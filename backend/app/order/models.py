@@ -31,6 +31,7 @@ class Order(models.Model):
     pay_status = models.CharField(verbose_name="결제상태", choices=PayStatusChoices.choices, max_length=9)
     total_amount = models.IntegerField(verbose_name="총 상품금액")
     delivery_fee = models.IntegerField(verbose_name="배송비")
+    is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
     class Meta:
         verbose_name = "주문"

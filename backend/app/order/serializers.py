@@ -32,6 +32,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'pay_status',
             'total_amount',
             'delivery_fee',
+            'is_cancelled',
             'order_products'
         )
 

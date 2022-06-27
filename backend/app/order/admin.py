@@ -18,7 +18,8 @@ class OrderAdmin(admin.ModelAdmin):
         'pay_date',
         'pay_status',
         'total_amount',
-        'delivery_fee'
+        'delivery_fee',
+        'is_cancelled'
     )
 
 
