@@ -1,6 +1,6 @@
 import datetime
 from pathlib import Path
-
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -224,10 +224,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = None
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
-USER_ROOT = "http://127.0.0.1:8000/v1/users"
 # KAKAO
-KAKAO_CLIENT_ID = 'e11ec334d1ea05b35cb51cc978c3cd1c'
-KAKAO_CLIENT_SECRET = 'S1GWsxA2HkAtkZrTmKSCSGWI64eqlS06'
+KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
+KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
+USER_ROOT = "http://127.0.0.1:8000/v1/users"
 KAKAO_REDIRECT_URL = f"{USER_ROOT}/login/kakao/callback"
 
 '''
