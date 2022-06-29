@@ -5,6 +5,7 @@ from . import models
 @admin.register(models.Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display =  (
+        'id',
         'user',
         'product',
         'rating',
@@ -15,6 +16,7 @@ class ReviewAdmin(admin.ModelAdmin):
 @admin.register(models.Photo)
 class PhotoAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'review',
         'img'
     )
@@ -22,6 +24,7 @@ class PhotoAdmin(admin.ModelAdmin):
 @admin.register(models.Reply)
 class ReplyAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'review',
         'content',
         'created_at'
