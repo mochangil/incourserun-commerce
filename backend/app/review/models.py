@@ -13,6 +13,9 @@ class Review(models.Model):
         verbose_name = "리뷰"
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return f'Review({self.id}) - {self.user} - {self.product}'
+
 
 class Photo(models.Model):
     review = models.ForeignKey('review.Review', related_name="photos", on_delete=models.CASCADE)
@@ -21,6 +24,9 @@ class Photo(models.Model):
     class Meta:
         verbose_name = "리뷰 사진"
         verbose_name_plural = verbose_name
+    
+    def __str__(self):
+        return f'Photo({self.id}) - {self.review.product} - {self.img}'
 
 
 class Reply(models.Model):
@@ -31,3 +37,6 @@ class Reply(models.Model):
     class Meta:
         verbose_name = "리뷰 답글"
         verbose_name_plural = verbose_name
+    
+    def __str__(self):
+        return f'Reply({self.id}) - {self.content}'
