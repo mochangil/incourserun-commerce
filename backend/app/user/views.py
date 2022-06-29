@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
 from .models import Cart, Social
 from .filters import UserFilter, CartFilter
+from .permissions import CartPermission
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -44,6 +45,7 @@ class CartListCreateView(ListCreateAPIView):
 class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    # permission_classes = [CartPermission]
 
 
 def kakao_login(request):
