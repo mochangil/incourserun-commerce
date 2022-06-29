@@ -32,6 +32,7 @@ class CustomUserAdmin(UserAdmin):
     list_filter = UserAdmin.list_filter
 
     list_display = (
+        "id",
         "username",
         "nickname",
         "email",
@@ -53,8 +54,8 @@ class SocialAdmin(admin.ModelAdmin):
 
     """Review Admin Definition"""
 
-    list_display = ("user","kind")
+    list_display = ("id", "user","kind")
 
 @admin.register(models.Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ("user", "product", "quantity")
+    list_display = ("id", "user", "product", "quantity")
