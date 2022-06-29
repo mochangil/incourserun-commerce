@@ -44,7 +44,6 @@ class UserSocialLoginSerializer(serializers.Serializer):
         user, created = User.objects.get_or_create(email=f'{social_user_id}@{state}.social', defaults={
             'password': make_password(None)
         })
-        print(AgeChoices.TEEN.value, AgeChoices.TEEN.label, AgeChoices.TEEN.name)
 
         if created:
             # user 데이터 추가
