@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Order, OrderProduct
 from ..product.serializers import ProductSerializer
+from ..review.serializers import ReviewSerializer
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -12,9 +13,11 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 
 class OrderProductCreateSerializer(serializers.ModelSerializer):
+    has_review = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = OrderProduct
-        fields = ('product', 'quantity')
+        fields = ('product', 'quantity', 'has_review')
 
 
 class OrderSerializer(serializers.ModelSerializer):
