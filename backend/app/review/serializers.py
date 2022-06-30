@@ -18,14 +18,14 @@ class ReviewSerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
     reply = ReplySerializer(read_only=True)
     photo_count = serializers.IntegerField(read_only=True)
-
-
+    
     class Meta:
         model = Review
         fields = (
             'id',
             'user',
             'product',
+            'order_product',
             'rating',
             'content',
             'created_at',
@@ -33,3 +33,5 @@ class ReviewSerializer(serializers.ModelSerializer):
             'reply',
             'photo_count'
         )
+
+    

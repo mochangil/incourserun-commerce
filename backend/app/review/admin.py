@@ -9,6 +9,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'id',
         'user',
         'product',
+        'order_product',
         'rating',
         'content',
         'count_photos',

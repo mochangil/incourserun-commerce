@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Review(models.Model):
     user = models.ForeignKey('user.User', related_name="reviews", on_delete=models.CASCADE)
     product = models.ForeignKey('product.Product', related_name="reviews", on_delete=models.CASCADE)
+    order_product = models.OneToOneField('order.OrderProduct', related_name="review", on_delete=models.CASCADE)
     rating = models.IntegerField(verbose_name="별점", validators=[MinValueValidator(1), MaxValueValidator(5)])
     content = models.CharField(verbose_name="내용", max_length = 1000, null=True, blank=True)
     created_at = models.DateTimeField(verbose_name="작성일시", auto_now_add=True)
