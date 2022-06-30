@@ -5,6 +5,7 @@ from . import models
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'user',
         'created_at',
         'shipping_name',
@@ -25,4 +26,9 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(models.OrderProduct)
 class OrderProductAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in models.OrderProduct._meta.get_fields()]
+    list_display = (
+        'id',
+        'order',
+        'product',
+        'quantity'
+    )
