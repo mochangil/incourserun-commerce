@@ -12,12 +12,18 @@ class ReviewAdmin(admin.ModelAdmin):
         'rating',
         'content',
         'count_photos',
+        'has_photo',
         'created_at',
     )
 
-    def count_photos(eslf, obj):
+    def count_photos(self, obj):
         return obj.photos.count()
     count_photos.short_description = "사진 개수"
+
+    def has_photo(self, obj):
+        return obj.photos.count() > 0
+    has_photo.short_description = "포토리뷰"
+    has_photo.boolean = True
 
 @admin.register(models.Photo)
 class PhotoAdmin(admin.ModelAdmin):
