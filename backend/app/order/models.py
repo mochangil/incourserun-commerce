@@ -17,7 +17,7 @@ class PayStatusChoices(models.TextChoices):
 
 
 class Order(models.Model):
-    user = models.ForeignKey('user.User', related_name="orders", on_delete = models.CASCADE)
+    user = models.ForeignKey('user.User', verbose_name="주문자", related_name="orders", on_delete = models.CASCADE)
     created_at = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
     shipping_name = models.CharField(verbose_name="수령인", max_length=10)
     shipping_phone = models.CharField(verbose_name="전화번호", max_length=13)
@@ -37,12 +37,18 @@ class Order(models.Model):
         verbose_name = "주문"
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return f'Order({self.id}) - {self.user} - {self.created_at}'
+
 
 class OrderProduct(models.Model):
-    order = models.ForeignKey('order.Order', related_name="order_products", on_delete=models.CASCADE)
-    product = models.ForeignKey('product.Product', related_name="order_products", on_delete=models.CASCADE)
+    order = models.ForeignKey('order.Order', verbose_name="주문", related_name="order_products", on_delete=models.CASCADE)
+    product = models.ForeignKey('product.Product', verbose_name="상품", related_name="order_products", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name = "주문-상품"
         verbose_name_plural = verbose_name
+    
+    def __str__(self):
+        return f'OrderProduct({self.id}) - Order({self.order.id}) - {self.product}'
