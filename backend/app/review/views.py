@@ -8,6 +8,7 @@ from .models import Review, Photo, Reply
 from .serializers import ReviewSerializer, PhotoSerializer, ReplySerializer
 from .filters import ReviewFilter, PhotoFilter, ReplyFilter
 from .paginations import ReviewPagination
+from .permissions import ReviewPermission
 
 
 # Create your views here.
@@ -23,6 +24,7 @@ class ReviewListCreateView(ListCreateAPIView):
 class ReviewDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    # permission_classes = [ReviewPermission]
 
 
 class PhotoListCreateView(ListCreateAPIView):
