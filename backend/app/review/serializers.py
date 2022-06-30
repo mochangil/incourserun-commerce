@@ -4,6 +4,11 @@ from .models import Review, Photo, Reply
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        if attrs['review'].photos.count() >= 3:
+            raise ValidationError({'photoCount': '리뷰 하나에 사진은 3개까지만 등록 가능합니다.'})
+        return attrs
+
     class Meta:
         model = Photo
         fields = '__all__'

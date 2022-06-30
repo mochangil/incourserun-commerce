@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from rest_framework.exceptions import ValidationError
 
 # Create your models here.
 class Review(models.Model):
@@ -28,6 +29,11 @@ class Photo(models.Model):
     
     def __str__(self):
         return f'Photo({self.id}) - {self.review.product} - {self.img}'
+        
+    def save(self, *args, **kwargs):
+        if Photo.objects.filter(review=self.review).count() >= 3:
+            raise ValidationError({'photoCount': '리뷰 하나에 사진은 3개까지만 등록 가능합니다.'})
+        return super(Photo, self).save(*args, **kwargs)
 
 
 class Reply(models.Model):
