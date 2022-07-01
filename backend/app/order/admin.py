@@ -20,6 +20,7 @@ class OrderAdmin(admin.ModelAdmin):
         'pay_status',
         'total_price',
         'delivery_fee',
+        'total_paid',
         'is_cancelled'
     )
 
