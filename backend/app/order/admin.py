@@ -30,5 +30,7 @@ class OrderProductAdmin(admin.ModelAdmin):
         'id',
         'order',
         'product',
-        'quantity'
+        'quantity',
+        'price',
+        'shipping_status'
     )

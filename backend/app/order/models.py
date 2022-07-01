@@ -45,6 +45,8 @@ class OrderProduct(models.Model):
     order = models.ForeignKey('order.Order', verbose_name="주문", related_name="order_products", on_delete=models.CASCADE)
     product = models.ForeignKey('product.Product', verbose_name="상품", related_name="order_products", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
+    price = models.IntegerField(verbose_name="상품가격", validators=[MinValueValidator(0)])
+    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
 
     class Meta:
         verbose_name = "주문-상품"
