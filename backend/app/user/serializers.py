@@ -80,6 +80,11 @@ class UserSocialLoginSerializer(serializers.Serializer):
 
             # Social 정보 저장
             Social.objects.create(user=user, kind=state)
+        
+        #탈퇴했던 유저인경우
+        elif user.is_active == False:
+            user.is_active = True
+            user.save()
 
         refresh = RefreshToken.for_user(user)
         print("token:", refresh.access_token)
