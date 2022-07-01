@@ -4,14 +4,6 @@ from ..product.serializers import ProductSerializer
 from ..review.serializers import ReviewSerializer
 
 
-class OrderProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-
-    class Meta:
-        model = OrderProduct
-        fields = '__all__'
-
-
 class OrderProductCreateSerializer(serializers.ModelSerializer):
     has_review = serializers.BooleanField(read_only=True)
 
