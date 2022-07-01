@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django_filters import rest_framework as filters
 from django.db.models import Exists, OuterRef, Prefetch
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from .models import Order, OrderProduct
 from ..review.models import Review
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, OrderProductSerializer
 from .filters import OrderFilter, OrderProductFilter
 
 
@@ -24,3 +24,8 @@ class OrderDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
         Prefetch("order_products", queryset = OrderProduct.objects.annotate(has_review = Exists(has_review_subquery)))
     )
     serializer_class = OrderSerializer
+
+
+class OrderProductDetailUpdateView(RetrieveUpdateAPIView):
+    queryset = OrderProduct.objects.all()
+    serializer_class = OrderProductSerializer
