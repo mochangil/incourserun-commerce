@@ -9,7 +9,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProduct
-        fields = ('id', 'product', 'quantity', 'price', 'shipping_status', 'has_review')
+        fields = ('id', 'product', 'quantity', 'price', 'shipping_status', 'is_cancelled', 'has_review')
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -37,7 +37,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'shipping_status',
             'pay_method',
             'pay_date',
-            'pay_status',
             'total_price',
             'delivery_fee',
             'total_paid',

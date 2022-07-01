@@ -11,10 +11,6 @@ class ShippingStatusChoices(models.TextChoices):
 class PayMethodChoices(models.TextChoices):
     CARD = '신용카드', '신용카드'
 
-class PayStatusChoices(models.TextChoices):
-    PAID = '결제완료', '결제완료'
-    CANCELLED = '결제취소', '결제취소'
-
 
 class Order(models.Model):
     user = models.ForeignKey('user.User', verbose_name="주문자", related_name="orders", on_delete = models.CASCADE)
@@ -28,7 +24,6 @@ class Order(models.Model):
     shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
-    pay_status = models.CharField(verbose_name="결제상태", choices=PayStatusChoices.choices, max_length=9)
     total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
     delivery_fee = models.IntegerField(verbose_name="배송비")
     total_paid = models.IntegerField(verbose_name="결제금액", validators=[MinValueValidator(0)])
@@ -48,6 +43,7 @@ class OrderProduct(models.Model):
     quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
     price = models.IntegerField(verbose_name="상품가격", validators=[MinValueValidator(0)])
     shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
+    is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
     class Meta:
         verbose_name = "주문-상품"

@@ -17,7 +17,6 @@ class OrderAdmin(admin.ModelAdmin):
         'shipping_status',
         'pay_method',
         'pay_date',
-        'pay_status',
         'total_price',
         'delivery_fee',
         'total_paid',
@@ -33,5 +32,6 @@ class OrderProductAdmin(admin.ModelAdmin):
         'product',
         'quantity',
         'price',
-        'shipping_status'
+        'shipping_status',
+        'is_cancelled'
     )
