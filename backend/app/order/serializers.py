@@ -4,7 +4,7 @@ from ..product.serializers import ProductSerializer
 from ..review.serializers import ReviewSerializer
 
 
-class OrderProductCreateSerializer(serializers.ModelSerializer):
+class OrderProductSerializer(serializers.ModelSerializer):
     has_review = serializers.BooleanField(read_only=True)
 
     class Meta:
@@ -13,7 +13,7 @@ class OrderProductCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_products = OrderProductCreateSerializer(many=True)
+    order_products = OrderProductSerializer(many=True)
 
     def create(self, validated_data):
         order_products = validated_data.pop('order_products')

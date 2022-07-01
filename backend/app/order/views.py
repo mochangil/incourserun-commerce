@@ -7,10 +7,10 @@ from ..review.models import Review
 from .serializers import OrderSerializer
 from .filters import OrderFilter, OrderProductFilter
 
-# Create your views here.
-class OrderListCreateView(ListCreateAPIView):
-    has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
 
+has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
+
+class OrderListCreateView(ListCreateAPIView):
     queryset = Order.objects.all().prefetch_related(
         Prefetch("order_products", queryset = OrderProduct.objects.annotate(has_review = Exists(has_review_subquery)))
     )
@@ -20,5 +20,7 @@ class OrderListCreateView(ListCreateAPIView):
 
 
 class OrderDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().prefetch_related(
+        Prefetch("order_products", queryset = OrderProduct.objects.annotate(has_review = Exists(has_review_subquery)))
+    )
     serializer_class = OrderSerializer
