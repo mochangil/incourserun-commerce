@@ -52,6 +52,9 @@ class OrderProduct(models.Model):
     class Meta:
         verbose_name = "주문-상품"
         verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=['order', 'product'], name='unique_order_product')
+        ]
     
     def __str__(self):
         return f'OrderProduct({self.id}) - Order({self.order.id}) - {self.product}'
