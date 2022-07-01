@@ -4,7 +4,7 @@ from django.db.models import Exists, OuterRef, Prefetch
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from .models import Order, OrderProduct
 from ..review.models import Review
-from .serializers import OrderSerializer, OrderProductSerializer
+from .serializers import OrderSerializer, OrderProductUpdateSerializer
 from .filters import OrderFilter, OrderProductFilter
 
 
@@ -28,4 +28,4 @@ class OrderDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 
 class OrderProductDetailUpdateView(RetrieveUpdateAPIView):
     queryset = OrderProduct.objects.all()
-    serializer_class = OrderProductSerializer
+    serializer_class = OrderProductUpdateSerializer
