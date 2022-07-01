@@ -81,3 +81,7 @@ class SocialAdmin(admin.ModelAdmin):
 @admin.register(models.Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "product", "quantity")
+
+@admin.register(models.Withdrawal)
+class Withdrawal(admin.ModelAdmin):
+    list_display = ("id","user")

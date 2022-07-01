@@ -1,15 +1,16 @@
 import requests
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import ValidationError
-from app.user.serializers import UserSocialLoginSerializer, UserSerializer, CartSerializer, SocialSerializer
+from app.user.serializers import UserSocialLoginSerializer, UserSerializer, CartSerializer, SocialSerializer,WithdrawalUserSerializer
 from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
-from .models import Cart, Social
+from .models import Cart, Social, Withdrawal
 from .filters import UserFilter, CartFilter
 from .permissions import CartPermission
+from django.db.models import Subquery, OuterRef
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -33,6 +34,8 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     User = get_user_model()
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
 
 
 class CartListCreateView(ListCreateAPIView):
@@ -70,3 +73,17 @@ def kakao_callback(request):
     if not response.ok:
         raise ValidationError()
     return redirect(settings.USER_ROOT)
+
+class UserWithdrawalListCreateView(ListCreateAPIView):
+    User = get_user_model()
+    # withqueryset = Withdrawal.objects.all()
+    # userqueryset = User.objects.filter(user=OuterRef('id')).values('user')
+
+    # queryset = Withdrawal.objects.annotate(
+    #     avg_rating = Coalesce(Subquery(userqueryset))
+
+    # )
+    queryset = Withdrawal.objects.all()
+    print(queryset)
+    serializer_class = WithdrawalUserSerializer
+    

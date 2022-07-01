@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.UserListView.as_view()),
     path('/<int:pk>', views.UserDetailUpdateDeleteView.as_view()),
     path('/social_login', views.UserSocialLoginView.as_view()),
+    path('/withdrawal',views.UserWithdrawalListCreateView.as_view()),
     path('/cart', views.CartListCreateView.as_view()),
     path('/cart/<int:pk>', views.CartDetailUpdateDeleteView.as_view()),
     path('/token/', TokenObtainPairView.as_view()),
