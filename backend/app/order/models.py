@@ -29,7 +29,7 @@ class Order(models.Model):
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
     pay_status = models.CharField(verbose_name="결제상태", choices=PayStatusChoices.choices, max_length=9)
-    total_amount = models.IntegerField(verbose_name="총 상품금액")
+    total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
     delivery_fee = models.IntegerField(verbose_name="배송비")
     is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 

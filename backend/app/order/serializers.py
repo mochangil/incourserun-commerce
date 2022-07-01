@@ -38,7 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'pay_method',
             'pay_date',
             'pay_status',
-            'total_amount',
+            'total_price',
             'delivery_fee',
             'is_cancelled',
             'order_products'
