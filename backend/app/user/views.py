@@ -76,14 +76,6 @@ def kakao_callback(request):
 
 class UserWithdrawalListCreateView(ListCreateAPIView):
     User = get_user_model()
-    # withqueryset = Withdrawal.objects.all()
-    # userqueryset = User.objects.filter(user=OuterRef('id')).values('user')
-
-    # queryset = Withdrawal.objects.annotate(
-    #     avg_rating = Coalesce(Subquery(userqueryset))
-
-    # )
     queryset = Withdrawal.objects.all()
     print(queryset)
     serializer_class = WithdrawalUserSerializer
-    

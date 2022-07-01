@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from app.user.models import User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
+from app.user.models import Reason, User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
 from app.order.serializers import OrderSerializer
 from app.review.serializers import ReviewSerializer
 from app.product.serializers import ProductSerializer
@@ -187,45 +187,27 @@ class UserSerializer(serializers.ModelSerializer):
             "reviews"
         )
 
+class WithdrawalReasonSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Reason
+        fields = "__all__"
+
 class WithdrawalUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-    # user_name = serializers.CharField(read_only=True)
-    # nickname = serializers.CharField(read_only=True)
-    # email = serializers.EmailField(read_only=True)
-    # phone = serializers.CharField(read_only=True)
-    # gender = serializers.CharField(read_only=True)
-    # age = serializers.CharField(read_only=True)
-    # zipcode = serializers.CharField(read_only=True)
-    # address = serializers.CharField(read_only=True)
-    # address_detail = serializers.CharField(read_only=True)
-
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
-    #     if created:
-    #         withdrawal_user.username = validated_data.get('username')
-    #         withdrawal_user.nickname = validated_data.get('nickname')
-    #         withdrawal_user.email = validated_data.get('email')
-    #         withdrawal_user.phone = validated_data.get('phone')
-    #         withdrawal_user.gender = validated_data.get('gender')
-    #         withdrawal_user.age = validated_data.get('age')
-    #         withdrawal_user.zipcode = validated_data.get('zipcode')
-    #         withdrawal_user.address = validated_data.get('address')
-    #         withdrawal_user.address_detail = validated_data.get('address_detail')
-            
-    #         withdrawal_user.save()
-    #     return withdrawal_user
-
+    reasons = WithdrawalReasonSerializer(many=True)
     class Meta:
         model = Withdrawal
         fields = (
             "id",
             "user",
-            # "profile_img",
-            "reason",
+            "reasons",
             "reason_others",
             "created_at"
         )
+
+
+
 
 
 

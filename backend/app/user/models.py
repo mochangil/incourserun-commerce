@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -99,17 +100,13 @@ class Cart(models.Model):
             models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product'),
         ]
 
-class WithdrawalReasonChoices(models.TextChoices):
-    CHANGE_ID = '아이디 변경(재가입)', '아이디 변경(재가입)'
-    LOW_FREQUENCY = '낮은 구매 빈도', '낮은 구매 빈도'
-    SERVICE_DISSATISFACTION = '서비스 및 고객지원 불만족', '서비스 및 고객지원 불만족'
-    OTHER_BRAND = '타 브랜드 이용', '타 브랜드 이용'
-    ETC = "기타","기타"
+class Reason(models.Model):
+    statement = models.CharField(max_length=100)
 
 class Withdrawal(models.Model):
     user = models.ForeignKey('user.User',related_name="withdrawal",on_delete=models.CASCADE)
     #manytomany (여러 사유가 존재)
-    reason = models.TextField(verbose_name="탈퇴사유",max_length=30,choices=WithdrawalReasonChoices.choices)
+    reasons = models.ManyToManyField(Reason,verbose_name="탈퇴사유",through='WithdrawalReason')
     reason_others = models.TextField(verbose_name="기타사유",max_length=1000, null=True)
     #탈퇴시기
     created_at = models.DateTimeField(verbose_name="탈퇴일시",auto_now_add=True)
@@ -117,3 +114,20 @@ class Withdrawal(models.Model):
     class Meta:
         verbose_name = "회원탈퇴"
         verbose_name_plural = verbose_name
+
+class ReasonChoices(models.TextChoices):
+    CHANGE_ID = '아이디 변경(재가입)', '아이디 변경(재가입)'
+    LOW_FREQUENCY = '낮은 구매 빈도', '낮은 구매 빈도'
+    SERVICE_DISSATISFACTION = '서비스 및 고객지원 불만족', '서비스 및 고객지원 불만족'
+    OTHER_BRAND = '타 브랜드 이용', '타 브랜드 이용'
+    ETC = "기타","기타"
+
+
+class WithdrawalReason(models.Model):
+    reason = models.ForeignKey(Reason, on_delete=models.CASCADE)
+    reasons = models.ForeignKey(Withdrawal,on_delete=models.CASCADE)
+    
+    def __init__(self,*args,**kwargs):
+        models.Model.__init__(self)
+        self.reason = models.CharField(choices=ReasonChoices.choices)
+        
