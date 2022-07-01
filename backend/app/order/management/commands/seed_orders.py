@@ -14,20 +14,21 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--number", default=1, type=int, help="How many ordesr you want to create"
+            "--number", default=1, type=int, help="How many orders you want to create"
         )
 
     def handle(self, *args, **options):
-        number = options.get("number")
-        seeder = Seed.seeder()
-        faker = Faker('ko_KR')
+        n = options.get("number")
         all_users = User.objects.all()
-        all_products = Product.objects.all()
-
-        seeder.add_entity(
-            Order,
-            number,
-            {
+        
+        for _ in range(n):
+            seeder = Seed.seeder()
+            faker = Faker('ko_KR')
+            status = random.choice(['결제완료', '상품준비중', '배송중', '배송완료'])
+            seeder.add_entity(
+                Order,
+                1,
+                {
                     "user": random.choice(all_users),
                     "shipping_name": faker.name(),
                     "shipping_phone": faker.phone_number(),
@@ -35,27 +36,38 @@ class Command(BaseCommand):
                     "shipping_address": faker.address(),
                     "shipping_address_detail": "",
                     "shipping_request": "",
-                    "shipping_status": "결제완료",
+                    "shipping_status": status,
                     "pay_method": "신용카드",
-                    "pay_status": "결제완료",
                     "pay_date": date.today(),
-                    "total_price": 27000,
+                    "total_price": 0,
                     "delivery_fee": 0,
                     "is_cancelled": False,
                     "created_at": datetime.now()
-            }
-        )
+                }
+            )
 
-        created_orders = seeder.execute()
-        created_clean = flatten(list(created_orders.values()))
-        for pk in created_clean:
-            for i in range(random.randint(3,5)):
+            created_orders = seeder.execute()
+            created_clean = flatten(list(created_orders.values()))
+            total_price = 0
+            for pk in created_clean:
                 order = Order.objects.get(pk=pk)
-                OrderProduct.objects.create(
-                    order = order,
-                    product = random.choice(all_products),
-                    quantity = random.randint(1, 5),
-                    price = 27000,
-                    shipping_status = "결제완료"
-                )
-        self.stdout.write(self.style.SUCCESS(f"{number} orders created"))
+                product_ids = random.sample(range(2,7), random.randint(1,5))
+                for i in product_ids:
+                    product = Product.objects.get(pk=i)
+                    quantity = random.randint(1, 5)
+                    OrderProduct.objects.create(
+                        order = order,
+                        product = product,
+                        quantity = quantity,
+                        price = product.price, 
+                        shipping_status = status,
+                        is_cancelled = False
+                    )
+                    total_price += product.price * quantity
+                order.total_price = total_price
+                if total_price < 30000:
+                    order.delivery_fee = 3000
+                order.total_paid = order.total_price + order.delivery_fee
+                order.save()
+
+        self.stdout.write(self.style.SUCCESS(f"{n} orders created"))
