@@ -82,8 +82,11 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('is_cancelled',)
 
-    # def update(self, instance, validated_data):
-    #     if instance.shipping_status != "결제완료":
-    #         raise ValidationError({'status':'주문이 결제완료 상태일 때만 취소 가능합니다.'})
-    #     instance.is_cancelled = validated_data['is_cancelled']
+    def update(self, instance, validated_data):
+        print(instance)
+        if instance.shipping_status != "결제완료":
+            raise ValidationError({'status':'주문이 결제완료 상태일 때만 변경 가능합니다.'})
+        instance.is_cancelled = validated_data['is_cancelled']
+        return instance
+        
 
