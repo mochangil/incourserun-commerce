@@ -85,6 +85,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         elif user.is_active == False:
             user.is_active = True
             user.save()
+            Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
         print("token:", refresh.access_token)
