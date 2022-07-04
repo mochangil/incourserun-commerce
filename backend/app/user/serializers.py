@@ -83,7 +83,33 @@ class UserSocialLoginSerializer(serializers.Serializer):
         #탈퇴했던 유저인경우
         elif user.is_active == False:
             user.is_active = True
+            if kakao_account['has_gender']:
+                if kakao_account['gender'] == 'male':
+                    user.gender = GenderChoices.MALE.value
+                if kakao_account['gender'] == 'female':
+                    user.gender = GenderChoices.FEMALE.value
+
+            if kakao_account['has_age_range']:
+                age = kakao_account['age_range']
+                if age == '10~14' or age == '15~19':
+                    user.age = AgeChoices.TEEN.value
+                elif age == '20~29':
+                    user.age = AgeChoices.TWENTY.value
+                elif age == '30~39':
+                    user.age = AgeChoices.THIRTY.value
+                elif age == '40~49':
+                    user.age = AgeChoices.FORTY.value
+                else:
+                    user.age = AgeChoices.OVER_FIFTY.value
+
+            # 프로필 이미지 저장
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
+            img_temp.flush()
+            user.profile_img.save(f'profile{user.pk}.jpg', File(img_temp))
+
             user.save()
+            
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
