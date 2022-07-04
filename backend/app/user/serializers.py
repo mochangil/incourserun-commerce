@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from app.user.models import Reason, User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
+from app.user.models import User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
 from app.order.serializers import OrderSerializer
 from app.review.serializers import ReviewSerializer
 from app.product.serializers import ProductSerializer
@@ -193,15 +193,9 @@ class UserSerializer(serializers.ModelSerializer):
             "reviews"
         )
 
-class WithdrawalReasonSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    class Meta:
-        model = Reason
-        fields = "__all__"
-
 class WithdrawalUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-    reasons = WithdrawalReasonSerializer(many=True)
+
     class Meta:
         model = Withdrawal
         fields = (
@@ -211,9 +205,3 @@ class WithdrawalUserSerializer(serializers.ModelSerializer):
             "reason_others",
             "created_at"
         )
-
-
-
-
-
-

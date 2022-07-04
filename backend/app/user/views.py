@@ -79,3 +79,7 @@ class UserWithdrawalListCreateView(ListCreateAPIView):
     queryset = Withdrawal.objects.all()
     print(queryset)
     serializer_class = WithdrawalUserSerializer
+
+class UserWithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Withdrawal.objects.all()
+    serializer_class = WithdrawalUserSerializer
