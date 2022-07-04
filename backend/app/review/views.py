@@ -8,7 +8,8 @@ from .models import Review, Photo, Reply
 from .serializers import ReviewSerializer, PhotoSerializer, ReplySerializer
 from .filters import ReviewFilter, PhotoFilter, ReplyFilter
 from .paginations import ReviewPagination
-from .permissions import ReviewPermission, PhotoPermission, ReplyPermission
+from .permissions import PhotoPermission
+from ..common.permissions import IsOwner, IsStaff
 
 
 # Create your views here.
@@ -24,7 +25,7 @@ class ReviewListCreateView(ListCreateAPIView):
 class ReviewDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    # permission_classes = [ReviewPermission]
+    # permission_classes = [IsOwner]
 
 
 class PhotoListCreateView(ListCreateAPIView):
@@ -32,23 +33,10 @@ class PhotoListCreateView(ListCreateAPIView):
     serializer_class = PhotoSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = PhotoFilter
+    # permission_classes = [PhotoPermission]
 
 
 class PhotoDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
     # permission_classes = [PhotoPermission]
-
-
-class ReplyListCreateView(ListCreateAPIView):
-    queryset = Reply.objects.all()
-    serializer_class = ReplySerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = ReplyFilter
-    permission_classes = [ReviewPermission]
-
-
-class ReplyDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Reply.objects.all()
-    serializer_class = ReplySerializer
-    permission_classes = [ReplyPermission]

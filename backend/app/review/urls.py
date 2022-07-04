@@ -8,6 +8,4 @@ urlpatterns = [
     path('/<int:pk>', views.ReviewDetailUpdateDeleteView.as_view()),
     path('/photos', views.PhotoListCreateView.as_view()),
     path('/photos/<int:pk>', views.PhotoDetailUpdateDeleteView.as_view()),
-    path('/replies', views.ReplyListCreateView.as_view()),
-    path('/replies/<int:pk>', views.ReplyDetailUpdateDeleteView.as_view())
 ]
