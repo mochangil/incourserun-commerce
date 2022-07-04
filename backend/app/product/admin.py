@@ -5,9 +5,11 @@ from . import models
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'name',
         'category',
         'capacity',
+        'price',
         'description',
         'product_img',
         'detail_img',
@@ -17,4 +19,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Hashtag)
 class HashtagAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
