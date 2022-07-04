@@ -42,8 +42,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        if attrs['user'] != self.context['request'].user:
-            raise ValidationError({'user': '요청인과 작성자가 일치하지 않습니다.'})
+        # if attrs['user'] != self.context['request'].user:
+        #     raise ValidationError({'user': '요청인과 작성자가 일치하지 않습니다.'})
         if attrs['user'] != attrs['order_product'].order.user:
             raise ValidationError({'user': '주문자와 작성자가 일치하지 않습니다.'})
         if attrs['order_product'].shipping_status != "배송완료":
