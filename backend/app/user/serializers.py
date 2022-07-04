@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from app.user.models import User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices
+from app.user.models import User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
 from app.order.serializers import OrderSerializer
 from app.review.serializers import ReviewSerializer
 from app.product.serializers import ProductSerializer
@@ -78,6 +78,38 @@ class UserSocialLoginSerializer(serializers.Serializer):
             user.save()
 
             # Social 정보 저장
+            Social.objects.create(user=user, kind=state)
+        
+        #탈퇴했던 유저인경우
+        elif user.is_active == False:
+            user.is_active = True
+            if kakao_account['has_gender']:
+                if kakao_account['gender'] == 'male':
+                    user.gender = GenderChoices.MALE.value
+                if kakao_account['gender'] == 'female':
+                    user.gender = GenderChoices.FEMALE.value
+
+            if kakao_account['has_age_range']:
+                age = kakao_account['age_range']
+                if age == '10~14' or age == '15~19':
+                    user.age = AgeChoices.TEEN.value
+                elif age == '20~29':
+                    user.age = AgeChoices.TWENTY.value
+                elif age == '30~39':
+                    user.age = AgeChoices.THIRTY.value
+                elif age == '40~49':
+                    user.age = AgeChoices.FORTY.value
+                else:
+                    user.age = AgeChoices.OVER_FIFTY.value
+
+            # 프로필 이미지 저장
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
+            img_temp.flush()
+            user.profile_img.save(f'profile{user.pk}.jpg', File(img_temp))
+
+            user.save()
+            
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
@@ -186,5 +218,30 @@ class UserSerializer(serializers.ModelSerializer):
             "reviews"
         )
 
+class WithdrawalUserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    def validate(self, attrs):
+        return attrs
 
+    def create(self, validated_data):
+        withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
+        withdrawal_user.reasons = validated_data['reasons']
+        withdrawal_user.reason_others = validated_data['reason_others']
+        print(validated_data['user'])
+        withdrawal_user.save()
+        #해당 user 비활성화
+        user = User.objects.get(email = validated_data.get('user'))
+        print(user)
+        user.is_active = False
+        user.save()
+        return withdrawal_user
 
+    class Meta:
+        model = Withdrawal
+        fields = (
+            "id",
+            "user",
+            "reasons",
+            "reason_others",
+            "created_at"
+        )

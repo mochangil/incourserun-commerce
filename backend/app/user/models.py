@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -39,6 +40,7 @@ class AgeChoices(models.TextChoices):
     THIRTY = '30대', '30대'
     FORTY = '40대', '40대'
     OVER_FIFTY = '50대 이상', '50대 이상'
+
 
 
 class User(AbstractUser):
@@ -97,3 +99,22 @@ class Cart(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product'),
         ]
+
+class ReasonChoices(models.TextChoices):
+    CHANGE_ID = '아이디 변경(재가입)', '아이디 변경(재가입)'
+    LOW_FREQUENCY = '낮은 구매 빈도', '낮은 구매 빈도'
+    SERVICE_DISSATISFACTION = '서비스 및 고객지원 불만족', '서비스 및 고객지원 불만족'
+    OTHER_BRAND = '타 브랜드 이용', '타 브랜드 이용'
+    ETC = "기타","기타"
+
+class Withdrawal(models.Model):
+    #one to one field
+    user = models.ForeignKey('user.User',related_name="withdrawal",on_delete=models.CASCADE)
+    reasons = models.CharField(verbose_name="탈퇴사유",max_length=20,choices = ReasonChoices.choices)
+    reason_others = models.TextField(verbose_name="기타사유",max_length=1000, null=True)
+    created_at = models.DateTimeField(verbose_name="탈퇴일시",auto_now_add=True)
+
+    class Meta:
+        verbose_name = "회원탈퇴"
+        verbose_name_plural = verbose_name
+        
