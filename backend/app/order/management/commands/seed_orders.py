@@ -51,6 +51,7 @@ class Command(BaseCommand):
             total_price = 0
             for pk in created_clean:
                 order = Order.objects.get(pk=pk)
+                order.order_number = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
                 product_ids = random.sample(range(2,7), random.randint(1,5))
                 for i in product_ids:
                     product = Product.objects.get(pk=i)

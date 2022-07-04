@@ -14,6 +14,7 @@ class PayMethodChoices(models.TextChoices):
 
 class Order(models.Model):
     user = models.ForeignKey('user.User', verbose_name="주문자", related_name="orders", on_delete = models.CASCADE)
+    order_number = models.CharField(verbose_name="주문번호", max_length=10, unique=True, default="0000000000")
     created_at = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
     shipping_name = models.CharField(verbose_name="수령인", max_length=10)
     shipping_phone = models.CharField(verbose_name="전화번호", max_length=13)
@@ -29,12 +30,13 @@ class Order(models.Model):
     total_paid = models.IntegerField(verbose_name="결제금액", validators=[MinValueValidator(0)])
     is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
+
     class Meta:
         verbose_name = "주문"
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return f'Order({self.id}) - {self.user} - {self.created_at}'
+        return f'Order {self.order_number} - {self.user}'
 
 
 class OrderProduct(models.Model):
@@ -53,4 +55,4 @@ class OrderProduct(models.Model):
         ]
     
     def __str__(self):
-        return f'OrderProduct({self.id}) - Order({self.order.id}) - {self.product}'
+        return f'OrderProduct({self.id}) - Order {self.order.order_number} - {self.product}'

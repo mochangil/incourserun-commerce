@@ -47,6 +47,7 @@ class OrderProductUpdateSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_products = OrderProductSerializer(many=True)
+    order_number = serializers.CharField(read_only=True)
 
     class Meta:
         model = Order
@@ -54,6 +55,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'created_at',
+            'order_number',
             'shipping_name',
             'shipping_phone',
             'shipping_zipcode',
@@ -73,6 +75,8 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
+        order.order_number = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
+        order.save()
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
         return order

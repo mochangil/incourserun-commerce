@@ -8,6 +8,7 @@ class OrderAdmin(admin.ModelAdmin):
         'id',
         'user',
         'created_at',
+        'order_number',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',
