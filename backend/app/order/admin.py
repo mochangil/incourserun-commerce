@@ -8,6 +8,7 @@ class OrderAdmin(admin.ModelAdmin):
         'id',
         'user',
         'created_at',
+        'order_number',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',
@@ -17,9 +18,9 @@ class OrderAdmin(admin.ModelAdmin):
         'shipping_status',
         'pay_method',
         'pay_date',
-        'pay_status',
-        'total_amount',
+        'total_price',
         'delivery_fee',
+        'total_paid',
         'is_cancelled'
     )
 
@@ -30,5 +31,8 @@ class OrderProductAdmin(admin.ModelAdmin):
         'id',
         'order',
         'product',
-        'quantity'
+        'quantity',
+        'price',
+        'shipping_status',
+        'is_cancelled'
     )
