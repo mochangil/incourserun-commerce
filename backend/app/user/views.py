@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
 from .models import Cart, Social, Withdrawal
 from .filters import UserFilter, CartFilter
-from .permissions import CartPermission
+from .permissions import CartPermission, UserPermission
 from django.db.models import Subquery, OuterRef
 
 
@@ -34,6 +34,7 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     User = get_user_model()
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    #permission_classes = [UserPermission]
 
 
 
@@ -75,10 +76,10 @@ def kakao_callback(request):
     return redirect(settings.USER_ROOT)
 
 class UserWithdrawalListCreateView(ListCreateAPIView):
-    User = get_user_model()
     queryset = Withdrawal.objects.all()
     print(queryset)
     serializer_class = WithdrawalUserSerializer
+    #permission_classes = [UserPermission]
 
 class UserWithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Withdrawal.objects.all()
