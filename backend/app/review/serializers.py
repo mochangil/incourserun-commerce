@@ -21,17 +21,10 @@ class ReplySerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(read_only=True)
     photos = PhotoSerializer(many=True, read_only=True)
     reply = ReplySerializer(read_only=True)
-    photo_count = serializers.IntegerField(read_only=True)
-
-    def validate(self, attrs):
-        order = attrs['order_product'].order
-        if order.user != self.context['request'].user:
-            raise ValidationError({'user': '주문자와 작성자가 일치하지 않습니다.'})
-        if order.shipping_status != "배송완료":
-            raise ValidationError({'shippingStatus': '배송 완료된 상품만 작성 가능합니다.'})
-        return attrs    
+    photo_count = serializers.IntegerField(read_only=True)    
 
     class Meta:
         model = Review
@@ -47,3 +40,16 @@ class ReviewSerializer(serializers.ModelSerializer):
             'reply',
             'photo_count'
         )
+
+    def validate(self, attrs):
+        if attrs['user'] != self.context['request'].user:
+            raise ValidationError({'user': '요청인과 작성자가 일치하지 않습니다.'})
+        if attrs['user'] != attrs['order_product'].order.user:
+            raise ValidationError({'user': '주문자와 작성자가 일치하지 않습니다.'})
+        if attrs['order_product'].shipping_status != "배송완료":
+            raise ValidationError({'shippingStatus': '배송 완료된 상품만 작성 가능합니다.'})
+        return attrs
+
+    def create(self, validated_data):
+        validated_data['product'] = validated_data['order_product'].product
+        return Review.objects.create(**validated_data)
