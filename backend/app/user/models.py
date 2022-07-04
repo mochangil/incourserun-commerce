@@ -109,7 +109,7 @@ class ReasonChoices(models.TextChoices):
 
 class Withdrawal(models.Model):
     #one to one field
-    user = models.ForeignKey('user.User',related_name="withdrawal",on_delete=models.CASCADE,unique=True)
+    user = models.ForeignKey('user.User',related_name="withdrawal",on_delete=models.CASCADE)
     reasons = models.CharField(verbose_name="탈퇴사유",max_length=20,choices = ReasonChoices.choices)
     reason_others = models.TextField(verbose_name="기타사유",max_length=1000, null=True)
     created_at = models.DateTimeField(verbose_name="탈퇴일시",auto_now_add=True)

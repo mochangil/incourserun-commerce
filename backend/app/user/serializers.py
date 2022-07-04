@@ -1,4 +1,5 @@
 from unittest.util import _MAX_LENGTH
+from venv import create
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -148,7 +149,7 @@ class CartSerializer(serializers.ModelSerializer):
             else:
                 cart.quantity += quantity
         cart.save()
-        return cart
+        return super().create(validated_data)
 
     class Meta:
         model = Cart
@@ -195,6 +196,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 class WithdrawalUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+    def validate(self, attrs):
+        return attrs
+
+    def create(self, validated_data):
+        withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
+        withdrawal_user.reasons = validated_data['reasons']
+        withdrawal_user.reason_others = validated_data['reason_others']
+        print(validated_data, withdrawal_user)
+        withdrawal_user.save()
+        return withdrawal_user
+        # User.objects.get(user = validated_data.get('user')).is_valid = False
 
     class Meta:
         model = Withdrawal
