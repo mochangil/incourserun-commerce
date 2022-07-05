@@ -20,7 +20,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(read_only=True)
     reply = ReplySerializer(read_only=True)
     photos = PhotoSerializer(many=True, read_only=True)
-    photo_count = serializers.IntegerField(read_only=True)    
+    has_photo = serializers.BooleanField(read_only=True)    
 
     class Meta:
         model = Review
@@ -34,7 +34,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'created_at',
             'reply',
             'photos',
-            'photo_count'
+            'has_photo'
         )
 
     def validate(self, attrs):
