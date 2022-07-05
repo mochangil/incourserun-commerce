@@ -1,4 +1,8 @@
 from config.settings.base import *
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DEBUG = True
 
@@ -6,23 +10,23 @@ ALLOWED_HOSTS += ["*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "DB_NAME",
-#         "USER": "DB_USER",
-#         "PASSWORD": "PASSWORD",
-#         "HOST": "DB_HOST",
-#         "PORT": "5432",
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "commerce",
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
+}
 
 
 # LOGGING
