@@ -148,7 +148,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if not response.ok:
             raise ValidationError('KAKAO ME API ERROR')
         data = response.json()
-        print(data)
+        # print(data)
         return data
 
     def get_naver_user_data(self, code, redirect_uri):
@@ -227,11 +227,11 @@ class WithdrawalUserSerializer(serializers.ModelSerializer):
         withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
         withdrawal_user.reasons = validated_data['reasons']
         withdrawal_user.reason_others = validated_data['reason_others']
-        print(validated_data['user'])
+        # print(validated_data['user'])
         withdrawal_user.save()
         #해당 user 비활성화
         user = User.objects.get(email = validated_data.get('user'))
-        print(user)
+        # print(user)
         user.is_active = False
         user.save()
         return withdrawal_user
