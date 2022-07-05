@@ -219,8 +219,21 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 class WithdrawalUserSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Withdrawal
+        fields = (
+            "id",
+            "user",
+            "reasons",
+            "reason_others",
+            "created_at"
+        )
+
     def validate(self, attrs):
+        if attrs['user'] != self.context['request'].user:
+            raise ValidationError({'user':'본인만 탈퇴 요청을 할 수 있습니다.'})
+        if attrs['reasons'] != '기타' and 'reason_others' in attrs:
+            raise ValidationError({'reason_others': "'기타'를 선택했을 때만 기타사유를 작성할 수 있습니다."})
         return attrs
 
     def create(self, validated_data):
@@ -235,13 +248,3 @@ class WithdrawalUserSerializer(serializers.ModelSerializer):
         user.is_active = False
         user.save()
         return withdrawal_user
-
-    class Meta:
-        model = Withdrawal
-        fields = (
-            "id",
-            "user",
-            "reasons",
-            "reason_others",
-            "created_at"
-        )
