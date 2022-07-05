@@ -1,21 +1,9 @@
 from django_filters import rest_framework as filters
-from .models import Review, Photo, Reply
+from .models import Review
 
 class ReviewFilter(filters.FilterSet):
-    photo_count = filters.NumberFilter(field_name='photo_count', lookup_expr='gt', label="photo_count (greater than)")
+    has_photo = filters.BooleanFilter(field_name='has_photo', label="Has Photo")
 
     class Meta:
         model = Review
-        fields = ['user', 'product']
-
-
-class PhotoFilter(filters.FilterSet):
-    class Meta:
-        model = Photo
-        fields = ['review']
-
-
-class ReplyFilter(filters.FilterSet):
-    class Meta:
-        model = Reply
-        fields = ['review']
+        fields = ['user', 'product', 'has_photo']
