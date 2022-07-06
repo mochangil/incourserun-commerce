@@ -86,19 +86,7 @@ class Social(models.Model):
     class Meta:
         verbose_name = '소셜'
         verbose_name_plural = verbose_name
-
-
-class Cart(models.Model):
-    user = models.ForeignKey('user.User', related_name="carts", on_delete=models.CASCADE)
-    product = models.ForeignKey('product.Product', related_name="carts", on_delete=models.CASCADE)
-    quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)], default=1)
-
-    class Meta:
-        verbose_name = "장바구니"
-        verbose_name_plural = verbose_name
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product'),
-        ]
+        
 
 class ReasonChoices(models.TextChoices):
     CHANGE_ID = '아이디 변경(재가입)', '아이디 변경(재가입)'

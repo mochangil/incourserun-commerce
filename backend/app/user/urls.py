@@ -10,8 +10,6 @@ urlpatterns = [
     path('/social_login', views.UserSocialLoginView.as_view()),
     path('/withdrawal',views.UserWithdrawalListCreateView.as_view()),
     path('/withdrawal/<int:pk>',views.UserWithdrawalUpdateDeleteView.as_view()),
-    path('/cart', views.CartListCreateView.as_view()),
-    path('/cart/<int:pk>', views.CartDetailUpdateDeleteView.as_view()),
     path('/token/', TokenObtainPairView.as_view()),
     path('/token/refresh', TokenRefreshView.as_view()),
     path('/login/kakao', views.kakao_login),

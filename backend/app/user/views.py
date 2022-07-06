@@ -7,11 +7,11 @@ from django.db.models import Prefetch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
-from .models import Cart, Social, Withdrawal
-from .filters import UserFilter, CartFilter
-from .permissions import CartPermission, UserPermission
+from .models import Social, Withdrawal
+from .filters import UserFilter
+from .permissions import UserPermission
 from django.db.models import Subquery, OuterRef
-
+from ..cart.models import Cart
 
 class UserSocialLoginView(CreateAPIView):
     """
@@ -37,21 +37,6 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     #permission_classes = [UserPermission]
 
 
-
-
-class CartListCreateView(ListCreateAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = CartFilter
-
-
-class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-    # permission_classes = [CartPermission]
-
-
 def kakao_login(request):
     client_id = settings.KAKAO_CLIENT_ID
     redirect_uri = f"{settings.USER_ROOT}/login/kakao/callback"
@@ -61,7 +46,7 @@ def kakao_login(request):
     
 def kakao_callback(request):
     code = request.GET.get("code")
-    print(code)
+    # print(code)
     redirect_uri = settings.KAKAO_REDIRECT_URL
 
     url = f"{settings.USER_ROOT}/social_login"
@@ -77,7 +62,7 @@ def kakao_callback(request):
 
 class UserWithdrawalListCreateView(ListCreateAPIView):
     queryset = Withdrawal.objects.all()
-    print(queryset)
+    # print(queryset)
     serializer_class = WithdrawalUserSerializer
     #permission_classes = [UserPermission]
 
