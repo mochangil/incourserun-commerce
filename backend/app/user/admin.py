@@ -2,6 +2,19 @@ from django.contrib import admin
 from . import models
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import mark_safe
+from ..cart.models import Cart
+from ..order.models import Order
+from ..review.models import Review
+
+
+class CartInline(admin.TabularInline):
+    model = Cart
+
+class OrderInline(admin.TabularInline):
+    model = Order
+
+class ReviewInline(admin.TabularInline):
+    model = Review
 
 
 @admin.register(models.User)
@@ -9,6 +22,7 @@ class CustomUserAdmin(UserAdmin):
 
     """Custom User Admin"""
 
+    inlines = (CartInline, OrderInline, ReviewInline)
     fieldsets = (
         ('Personal info', 
             {'fields': (
