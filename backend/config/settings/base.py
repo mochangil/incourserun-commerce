@@ -2,6 +2,7 @@ import datetime
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+# from iamport import Iamport
 
 load_dotenv()
 
@@ -236,3 +237,19 @@ KAKAO LOGIN URL
 https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${SOCIAL_REDIRECT_URL}&state=kakao
 https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=29bebceec427c5cb9e5a35627b29036e&redirect_uri=http://localhost:3000/login/social/callback&state=kakao
 '''
+
+# Postgre
+DB_USERNAME = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# Iamport
+IMP_KEY = os.getenv('IAMPORT_KEY')
+IMP_SECRET = os.getenv('IAMPORT_SECRET')
+ORDER_ROOT = "http://127.0.0.1:8000/v1/orders"
+
+# iamport = Iamport(
+#     imp_key=IMP_KEY,
+#     imp_secret=(
+#         IMP_SECRET
+#     )
+# )
