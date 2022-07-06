@@ -6,11 +6,10 @@ from django.db.models import Exists, OuterRef, Prefetch
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from .models import Order, OrderProduct
 from ..review.models import Review
-from .serializers import OrderSerializer, OrderUpdateSerializer, OrderProductUpdateSerializer, PaymentValidationSerializer
+from .serializers import OrderSerializer, OrderUpdateSerializer, OrderProductUpdateSerializer#, PaymentValidationSerializer
 from .filters import OrderFilter, OrderProductFilter
 from ..common.permissions import IsStaff, IsOwner
 from .permissions import OrderProductPermission
-from config.settings.base import iamport
 from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
@@ -42,20 +41,29 @@ class OrderProductDetailUpdateView(RetrieveUpdateAPIView):
     serializer_class = OrderProductUpdateSerializer
     # permission_classes = [OrderProductPermission]
 
-class PaymentValidationView(ListCreateAPIView):
-    serializer_class = PaymentValidationSerializer
+# class PaymentValidationView(ListCreateAPIView):
+#     serializer_class = PaymentValidationSerializer
 
 
+def payment_check(amounts, amounts_be_paid,status):
+    res = ""
+    if amounts == amounts_be_paid:
+        if status == "ready":
+            res = "unsupported features"
+        elif status == "paid":
+            res = "결제완료"
+        else:
+            res = "cancelled"
+    
+    return res
 
 
 def payment_complete(request):
-    # iamport-webhook post요청 처리필요
-
     # 결제번호, 주문번호 - post
     # imp_uid = request.POST['imp_uid']
     # merchant_uid = request.POST['merchant_uid']
     imp_uid = 'imp_114101979999'
-    merchant_uid = '2207050002'
+    merchant_uid = '2207060003'
     
     #1. access token
     url = 'https://api.iamport.kr/users/getToken'
@@ -68,6 +76,7 @@ def payment_complete(request):
     access_token = access_token['response'].get('access_token')
     print("access_token => \n",access_token,"\n")
 
+
     #2. imp_uid로 아임포트 서버에서 결제 정보 조회
     url = f"https://api.iamport.kr/payments/{imp_uid}"
     header = {'HTTP_Authorization':f'Bearer {access_token}'}
@@ -78,31 +87,35 @@ def payment_complete(request):
     imp_inf = imp_inf.json()
     data = imp_inf['response']
 
+
     #test data
     data = {
         'merchant_uid':merchant_uid,
-        'status':'paid',
+        'status':'cancelled',
         'amounts':10,
         }
     print(data)
+
 
     #3 검증
     merchant_uid = data['merchant_uid']
     status = data['status']
     amounts = data['amounts']
     order = Order.objects.get(order_number=merchant_uid)
-
-    amount_be_paid = order.total_paid
-    if amounts == amount_be_paid:
-        if status == "paid":
-            print("success\n")
-            order.shipping_status = "결제완료"
+    amounts_be_paid = order.total_paid
+    res = payment_check(amounts,amounts_be_paid,status)
+    
+    if res == "결제완료":
+        order.shipping_status = "결제완료"
+        redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
+    elif res == 'unsupported features':
+        redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
     else:
-        #order.delete()
-        raise ValidationError("결제금액 불일치. 위/변조된 결제")
-
+        order.delete()
+        redirect_url = f"{settings.ORDER_ROOT}"
+        raise ValidationError("환불되었거나 결제금액이 일치하지 않습니다. 위/변조된 결제")
+    
+    print(res)
     #결제완료 페이지 (현재는 해당 유저의 주문내역)
     #front에 return해줄 응답
-    order = Order.objects.get(order_number=merchant_uid)
-    return redirect(f"{settings.ORDER_ROOT}/{order.id}")
-
+    return redirect(redirect_url)
