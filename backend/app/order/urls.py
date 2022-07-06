@@ -9,4 +9,5 @@ urlpatterns = [
     path('/order-products/<int:pk>', views.OrderProductDetailUpdateView.as_view()),
     path('/payment_complete',views.payment_complete),
     # path('/payment_validation',views.PaymentValidationView.as_view())
+    path('/iamport_webhook',views.payment_complete),
 ]
