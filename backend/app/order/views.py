@@ -106,6 +106,7 @@ def payment_complete(request):
     res = payment_check(amounts,amounts_be_paid,status)
     
     if res == "결제완료":
+        order.imp_uid = imp_uid
         order.shipping_status = "결제완료"
         redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
     elif res == 'unsupported features':
