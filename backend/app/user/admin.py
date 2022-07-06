@@ -76,9 +76,9 @@ class SocialAdmin(admin.ModelAdmin):
 
     """Review Admin Definition"""
 
-    list_display = ("id", "user","kind")
+    list_display = ("id", "user", "kind")
     
 
 @admin.register(models.Withdrawal)
 class Withdrawal(admin.ModelAdmin):
-    list_display = ("id","user")
+    list_display = ("id", "user", "reasons", "reason_others", "created_at")
