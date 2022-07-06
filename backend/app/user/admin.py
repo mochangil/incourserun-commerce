@@ -77,10 +77,7 @@ class SocialAdmin(admin.ModelAdmin):
     """Review Admin Definition"""
 
     list_display = ("id", "user","kind")
-
-@admin.register(models.Cart)
-class CartAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "product", "quantity")
+    
 
 @admin.register(models.Withdrawal)
 class Withdrawal(admin.ModelAdmin):

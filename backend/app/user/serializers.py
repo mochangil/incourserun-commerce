@@ -9,7 +9,8 @@ from tempfile import NamedTemporaryFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from app.user.models import User, Social, SocialKindChoices, Cart, AgeChoices, GenderChoices,Withdrawal
+from app.user.models import User, Social, SocialKindChoices, AgeChoices, GenderChoices, Withdrawal
+from app.cart.serializers import CartSerializer
 from app.order.serializers import OrderSerializer
 from app.review.serializers import ReviewSerializer
 from app.product.serializers import ProductSerializer
@@ -131,30 +132,6 @@ class SocialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Social
         fields = '__all__'
-
-
-class CartSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-
-    def create(self, validated_data):
-        cart, created = Cart.objects.get_or_create(user=validated_data['user'], product=validated_data['product'])
-        quantity = validated_data.get('quantity')
-        if quantity is not None:
-            if created: 
-                cart.quantity = quantity
-            else:
-                cart.quantity += quantity
-        cart.save()
-        return cart
-
-    class Meta:
-        model = Cart
-        fields = (
-            'id',
-            'user',
-            'product',
-            'quantity'
-        )
 
 
 class UserSerializer(serializers.ModelSerializer):

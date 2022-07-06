@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [".elasticbeanstalk.com"]
 LOCAL_APPS = [
     "app.staticfile",
     "app.user.apps.UserConfig",
+    "app.cart.apps.CartConfig",
     "app.product.apps.ProductConfig",
     "app.order.apps.OrderConfig",
     "app.review.apps.ReviewConfig"

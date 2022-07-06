@@ -7,11 +7,11 @@ from django.db.models import Prefetch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
-from .models import Cart, Social, Withdrawal
-from .filters import UserFilter, CartFilter
-from .permissions import CartPermission, UserPermission
+from .models import Social, Withdrawal
+from .filters import UserFilter
+from .permissions import UserPermission
 from django.db.models import Subquery, OuterRef
-
+from ..cart.models import Cart
 
 class UserSocialLoginView(CreateAPIView):
     """
@@ -35,21 +35,6 @@ class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     #permission_classes = [UserPermission]
-
-
-
-
-class CartListCreateView(ListCreateAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = CartFilter
-
-
-class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-    # permission_classes = [CartPermission]
 
 
 def kakao_login(request):
