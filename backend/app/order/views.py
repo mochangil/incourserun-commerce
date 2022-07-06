@@ -62,8 +62,8 @@ def payment_complete(request):
     # 결제번호, 주문번호 - post
     # imp_uid = request.POST['imp_uid']
     # merchant_uid = request.POST['merchant_uid']
-    imp_uid = 'imp_114101979999'
-    merchant_uid = '2207060003'
+    imp_uid = '결제 id'
+    merchant_uid = '주문 id'
     
     #1. access token
     url = 'https://api.iamport.kr/users/getToken'
@@ -91,7 +91,7 @@ def payment_complete(request):
     #test data
     data = {
         'merchant_uid':merchant_uid,
-        'status':'cancelled',
+        'status':'paid',
         'amounts':10,
         }
     print(data)
@@ -109,7 +109,9 @@ def payment_complete(request):
         order.shipping_status = "결제완료"
         redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
     elif res == 'unsupported features':
-        redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
+        order.delete()
+        redirect_url = f"{settings.ORDER_ROOT}"
+        raise ValidationError("지원하지 않는 결제 수단입니다.")
     else:
         order.delete()
         redirect_url = f"{settings.ORDER_ROOT}"
