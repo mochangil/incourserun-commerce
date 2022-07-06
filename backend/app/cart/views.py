@@ -17,4 +17,4 @@ class CartListCreateView(ListCreateAPIView):
 class CartDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes = [IsOwner]
+    # permission_classes = [IsOwner]
