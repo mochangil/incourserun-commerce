@@ -113,7 +113,7 @@ USE_TZ = False
 
 SITE_NAME = "인코스런"
 SITE_LOGO = "img/logo.png"  # static/img/logo.png 변경
-SITE_URL = "https://frontend-domain.com"
+SITE_URL = "http://172.30.1.17:3000" # 프론트엔드 url
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
@@ -228,8 +228,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 # KAKAO
 KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
 KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
-USER_ROOT = "http://127.0.0.1:8000/v1/users"
-KAKAO_REDIRECT_URL = f"{USER_ROOT}/login/kakao/callback"
+KAKAO_REDIRECT_URI = SITE_URL + "/login/kakao/callback"
 
 '''
 KAKAO LOGIN URL
