@@ -42,14 +42,14 @@ class UserSocialLoginSerializer(serializers.Serializer):
         social_user_id = validated_data['social_user_data']['id']
         kakao_account = validated_data['social_user_data']['kakao_account']
         state = validated_data['state']
-        user, created = User.objects.get_or_create(email=f'{social_user_id}@{state}.social', defaults={
+        user, created = User.objects.get_or_create(username=f'{social_user_id}@{state}.social', defaults={
             'password': make_password(None)
         })
 
         if created or user.is_active == False:
              # user 데이터 추가
             if created: # 새로 가입한 유저인 경우
-                user.username = kakao_account['email']
+                user.email = kakao_account['email']
                 user.nickname = kakao_account['profile']['nickname']
 
             if user.is_active == False: #탈퇴했던 유저인 경우
@@ -65,11 +65,11 @@ class UserSocialLoginSerializer(serializers.Serializer):
                 age_range = kakao_account['age_range']
                 if age_range == '10~14' or age_range == '15~19':
                     user.age_range = AgeChoices.TEEN.value
-                elif age == '20~29':
+                elif age_range == '20~29':
                     user.age_range = AgeChoices.TWENTY.value
-                elif age == '30~39':
+                elif age_range == '30~39':
                     user.age_range = AgeChoices.THIRTY.value
-                elif age == '40~49':
+                elif age_range == '40~49':
                     user.age_range = AgeChoices.FORTY.value
                 else:
                     user.age_range = AgeChoices.OVER_FIFTY.value
@@ -148,6 +148,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "username",
+            "name",
             "nickname",
             "email",
             "phone",
@@ -162,6 +163,10 @@ class UserSerializer(serializers.ModelSerializer):
             "address_detail",
             "avatar",
             "created_at",
+            "agree_all_terms",
+            "required_terms",
+            "private_info_terms",
+            "marketing_terms",
             "social",
             "carts",
             "orders",

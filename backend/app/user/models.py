@@ -46,18 +46,23 @@ class AgeChoices(models.TextChoices):
 class User(AbstractUser):
     first_name = None
     last_name = None
-
+    
+    name = models.CharField(verbose_name="이름", max_length=10, null=True, blank=True)
     nickname = models.CharField(verbose_name="닉네임", max_length=10)
     email = models.EmailField(verbose_name="이메일", unique=True)
-    phone = models.CharField(verbose_name="휴대폰", max_length=11, null=True, blank=True)
+    phone = models.CharField(verbose_name="휴대폰", max_length=13, null=True, blank=True)
     gender = models.CharField(verbose_name="성별", max_length=6, choices=GenderChoices.choices, null=True, blank=True)
     age_range = models.CharField(verbose_name="연령대", max_length=6, choices=AgeChoices.choices, null=True, blank=True)
     zipcode = models.CharField(verbose_name="우편번호", max_length=7, null=True, blank=True)
     address = models.CharField(verbose_name="주소", max_length=1000, null=True, blank=True)
     address_detail = models.CharField(verbose_name="상세주소", max_length=1000, null=True, blank=True)
     avatar = models.ImageField(verbose_name="프로필사진", upload_to='profile', null=True, blank=True)
-    is_register = models.BooleanField(verbose_name="등록여부", default=False)
     created_at = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
+    is_register = models.BooleanField(verbose_name="등록여부", default=False)
+    agree_all_terms = models.BooleanField(verbose_name="약관전체동의", default=False)
+    required_terms = models.BooleanField(verbose_name="필수약관동의", default=False)
+    private_info_terms = models.BooleanField(verbose_name="개인정보동의", default=False)
+    marketing_terms = models.BooleanField(verbose_name="마케팅동의", default=False)
 
     USERNAME_FIELD = "username"
 
