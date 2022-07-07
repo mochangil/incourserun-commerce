@@ -27,6 +27,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'total_paid',
         'is_cancelled'
     )
+    list_filter = ('shipping_status', 'is_cancelled')
 
 
 @admin.register(models.OrderProduct)
@@ -40,3 +41,4 @@ class OrderProductAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'shipping_status',
         'is_cancelled'
     )
+    list_filter = ('product', 'shipping_status', 'is_cancelled')

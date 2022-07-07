@@ -29,7 +29,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if attrs['state'] not in SocialKindChoices:
             raise ValidationError({'kind': '지원하지 않는 소셜 타입입니다.'})
 
-        social_user_data = self.get_social_user_data(attrs['code'], attrs['state'])
+        social_user_data = self.get_social_user_data(attrs['code'], attrs['state'], attrs['redirect_uri'])
         kakao_account = social_user_data['kakao_account']
         if kakao_account['has_age_range']:
             if kakao_account['age_range'] == '1~9':
@@ -94,8 +94,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             'is_register': user.is_register,
         }
 
-    def get_social_user_data(self, code, state):
-        redirect_uri = settings.KAKAO_REDIRECT_URL
+    def get_social_user_data(self, code, state, redirect_uri):
         social_user_data = getattr(self, f'get_{state}_user_data')(code, redirect_uri)
         return social_user_data
 
@@ -109,6 +108,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             'client_secret': settings.KAKAO_CLIENT_SECRET,
         }
         response = requests.post(url=url, data=data)
+        print(response.content)
         if not response.ok:
             raise ValidationError('KAKAO GET TOKEN API ERROR')
         data = response.json()
