@@ -43,9 +43,7 @@ class CustomUserAdmin(UserAdmin):
             )}
         ),
     )
-
-    list_filter = UserAdmin.list_filter
-
+    list_filter = UserAdmin.list_filter + ('gender', 'age', 'is_register',)
     list_display = (
         "id",
         "username",
@@ -96,3 +94,4 @@ class SocialAdmin(admin.ModelAdmin):
 @admin.register(models.Withdrawal)
 class Withdrawal(admin.ModelAdmin):
     list_display = ("id", "user", "reasons", "reason_others", "created_at")
+    list_filter = ('reasons',)
