@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from .models import Order, OrderProduct
 from ..review.serializers import ReviewSerializer
+from django.contrib.auth import get_user_model
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -46,8 +47,10 @@ class OrderProductUpdateSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    User = get_user_model()
     order_products = OrderProductSerializer(many=True)
     order_number = serializers.CharField(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Order
@@ -74,6 +77,7 @@ class OrderSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        validated_data['user']=self.context['request'].user
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
         order.order_number = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
