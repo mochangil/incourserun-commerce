@@ -1,9 +1,17 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportMixin
 from . import models
+from django.http import HttpResponse
+
+class OrderResource(resources.ModelResource):
+    class Meta:
+        model = models.Order
+        fields = "__all__"
 
 # Register your models here.
 @admin.register(models.Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display = (
         'id',
         'user',
