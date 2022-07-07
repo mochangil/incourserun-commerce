@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.db import transaction
 from .models import Review, Photo, Reply
+from django.contrib.auth import get_user_model
 
 
 class PhotoSerializer(serializers.ModelSerializer):
@@ -17,10 +18,12 @@ class ReplySerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    User = get_user_model()
     product = serializers.PrimaryKeyRelatedField(read_only=True)
     reply = ReplySerializer(read_only=True)
     photos = PhotoSerializer(many=True, read_only=True)
     has_photo = serializers.BooleanField(read_only=True)    
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Review
@@ -48,6 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        validated_data['user']=self.context['request'].user
         # 리뷰 저장
         validated_data['product'] = validated_data['order_product'].product
         review = Review.objects.create(**validated_data)
