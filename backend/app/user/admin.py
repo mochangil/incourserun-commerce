@@ -76,6 +76,7 @@ class CustomUserAdmin(UserAdmin):
         "count_orders",
         "count_reviews",
     )
+    search_fields = ("=name", "^email", "^phone", "=zipcode", "address", "address_detail",)
 
     def get_avatar(self, obj):
         url = obj.avatar.url if obj.avatar else ""
