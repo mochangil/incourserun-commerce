@@ -26,6 +26,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_filter = ('product', 'rating')
+    search_fields = ("=user__name", "^user__email", "product__name", "content")
 
     def count_photos(self, obj):
         return obj.photos.count()
