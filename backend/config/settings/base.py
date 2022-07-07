@@ -31,6 +31,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "multiselectfield",
     "storages",
+    "import_export",
 ]
 
 DJANGO_APPS = [
