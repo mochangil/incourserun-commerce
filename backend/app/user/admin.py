@@ -79,7 +79,7 @@ class CustomUserAdmin(UserAdmin):
 
     def get_avatar(self, obj):
         url = obj.avatar.url if obj.avatar else ""
-        return mark_safe(f'<div><a href="{url}">{obj.avatar}</a><img width="100px" src="{url}" /></div>')
+        return mark_safe(f'<div> <div><a href="{url}">{obj.avatar}</a></div> <img width="100px" src="{url}" /> </div>')
     get_avatar.short_description = "프로필사진"
     
     def count_carts(self, obj):
