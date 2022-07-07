@@ -28,47 +28,60 @@ class CustomUserAdmin(UserAdmin):
             {'fields': (
             "username",
             "password",
+            "name",
             "nickname",
-            "email", 
+            "email",
+            "phone",
+            "gender",
+            "age_range",
+            "zipcode",
+            "address",
+            "address_detail",
+            "avatar",
             "is_active",
             "is_staff",
             "is_superuser",
             "is_register",
-            "gender",
-            "age",
-            "zipcode",
-            "address",
-            "address_detail",
-            "profile_img",
+            "agree_all_terms",
+            "required_terms",
+            "private_info_terms",
+            "marketing_terms",
             )}
         ),
     )
-    list_filter = UserAdmin.list_filter + ('gender', 'age', 'is_register',)
+    list_filter = UserAdmin.list_filter + ('gender', 'age_range', 'is_register',)
     list_display = (
         "id",
         "username",
+        "name",
         "nickname",
         "email",
-        "get_profile_img",
+        "phone",
+        "get_avatar",
         "gender",
-        "age",
+        "age_range",
         "zipcode",
         "address",
         "address_detail",
         "created_at",
-        "count_carts",
-        "count_orders",
-        "count_reviews",
         "is_active",
         "is_staff",
         "is_superuser",
         "is_register",
+        "agree_all_terms",
+        "required_terms",
+        "private_info_terms",
+        "marketing_terms",
+        "count_carts",
+        "count_orders",
+        "count_reviews",
     )
+    search_fields = ("=name", "^email", "^phone", "=zipcode", "address", "address_detail",)
 
-    def get_profile_img(self, obj):
-        url = obj.profile_img.url if obj.profile_img else ""
-        return mark_safe(f'<div><a href="{url}">{obj.profile_img}</a><img width="100px" src="{url}" /></div>')
-    get_profile_img.short_description = "프로필사진"
+    def get_avatar(self, obj):
+        url = obj.avatar.url if obj.avatar else ""
+        return mark_safe(f'<div> <div><a href="{url}">{obj.avatar}</a></div> <img width="100px" src="{url}" /> </div>')
+    get_avatar.short_description = "프로필사진"
     
     def count_carts(self, obj):
         return obj.carts.count()
