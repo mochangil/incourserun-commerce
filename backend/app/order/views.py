@@ -60,10 +60,18 @@ def payment_check(amounts, amounts_be_paid,status):
 
 def payment_complete(request):
     # 결제번호, 주문번호 - post
-    # imp_uid = request.POST['imp_uid']
-    # merchant_uid = request.POST['merchant_uid']
-    imp_uid = '결제 id'
-    merchant_uid = '주문 id'
+    # Webhook, 일반적 결제완료
+    if request.method == 'POST':
+        imp_uid = request.POST['imp_uid']
+        merchant_uid = request.POST['merchant_uid']
+    # mobile
+    if request.method == 'GET':
+        imp_uid = request.GET['imp_uid']
+        merchant_uid = request.GET['merchant_uid']
+
+    # test id
+    # imp_uid = '결제 id'
+    # merchant_uid = '주문 id'
     
     #1. access token
     url = 'https://api.iamport.kr/users/getToken'
@@ -79,7 +87,7 @@ def payment_complete(request):
 
     #2. imp_uid로 아임포트 서버에서 결제 정보 조회
     url = f"https://api.iamport.kr/payments/{imp_uid}"
-    header = {'HTTP_Authorization':f'Bearer {access_token}'}
+    header = {'Authorization':f'Bearer {access_token}'}
     imp_inf = requests.get(url=url,headers=header)
     print("imp_inf => \n",imp_inf)
     # if not imp_inf.ok:
@@ -89,12 +97,12 @@ def payment_complete(request):
 
 
     #test data
-    data = {
-        'merchant_uid':merchant_uid,
-        'status':'paid',
-        'amounts':10,
-        }
-    print(data)
+    # data = {
+    #     'merchant_uid':merchant_uid,
+    #     'status':'paid',
+    #     'amounts':10,
+    #     }
+    # print(data)
 
 
     #3 검증
@@ -106,6 +114,7 @@ def payment_complete(request):
     res = payment_check(amounts,amounts_be_paid,status)
     
     if res == "결제완료":
+        order.imp_uid = imp_uid
         order.shipping_status = "결제완료"
         redirect_url = f"{settings.ORDER_ROOT}/{order.id}"
     elif res == 'unsupported features':

@@ -55,6 +55,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'created_at',
+            'imp_uid',
             'order_number',
             'shipping_name',
             'shipping_phone',
