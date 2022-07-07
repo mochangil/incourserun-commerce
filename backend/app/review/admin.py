@@ -25,6 +25,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'has_reply',
         'created_at',
     )
+    list_filter = ('product', 'rating')
 
     def count_photos(self, obj):
         return obj.photos.count()
