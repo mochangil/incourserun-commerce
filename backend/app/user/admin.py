@@ -36,24 +36,24 @@ class CustomUserAdmin(UserAdmin):
             "is_superuser",
             "is_register",
             "gender",
-            "age",
+            "age_range",
             "zipcode",
             "address",
             "address_detail",
-            "profile_img",
+            "avatar",
             )}
         ),
     )
-    list_filter = UserAdmin.list_filter + ('gender', 'age', 'is_register',)
+    list_filter = UserAdmin.list_filter + ('gender', 'age_range', 'is_register',)
     list_display = (
         "id",
         "username",
         "nickname",
         "email",
         "phone",
-        "get_profile_img",
+        "get_avatar",
         "gender",
-        "age",
+        "age_range",
         "zipcode",
         "address",
         "address_detail",
@@ -67,10 +67,10 @@ class CustomUserAdmin(UserAdmin):
         "is_register",
     )
 
-    def get_profile_img(self, obj):
-        url = obj.profile_img.url if obj.profile_img else ""
-        return mark_safe(f'<div><a href="{url}">{obj.profile_img}</a><img width="100px" src="{url}" /></div>')
-    get_profile_img.short_description = "프로필사진"
+    def get_avatar(self, obj):
+        url = obj.avatar.url if obj.avatar else ""
+        return mark_safe(f'<div><a href="{url}">{obj.avatar}</a><img width="100px" src="{url}" /></div>')
+    get_avatar.short_description = "프로필사진"
     
     def count_carts(self, obj):
         return obj.carts.count()

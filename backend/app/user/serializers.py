@@ -33,7 +33,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         kakao_account = social_user_data['kakao_account']
         if kakao_account['has_age_range']:
             if kakao_account['age_range'] == '1~9':
-                raise ValidationError({'age': '10대 미만은 가입할 수 없습니다.'})
+                raise ValidationError({'age_range': '10대 미만은 가입할 수 없습니다.'})
         attrs['social_user_data'] = social_user_data
         return attrs
 
@@ -62,23 +62,23 @@ class UserSocialLoginSerializer(serializers.Serializer):
                     user.gender = GenderChoices.FEMALE.value
 
             if kakao_account['has_age_range']:
-                age = kakao_account['age_range']
-                if age == '10~14' or age == '15~19':
-                    user.age = AgeChoices.TEEN.value
+                age_range = kakao_account['age_range']
+                if age_range == '10~14' or age_range == '15~19':
+                    user.age_range = AgeChoices.TEEN.value
                 elif age == '20~29':
-                    user.age = AgeChoices.TWENTY.value
+                    user.age_range = AgeChoices.TWENTY.value
                 elif age == '30~39':
-                    user.age = AgeChoices.THIRTY.value
+                    user.age_range = AgeChoices.THIRTY.value
                 elif age == '40~49':
-                    user.age = AgeChoices.FORTY.value
+                    user.age_range = AgeChoices.FORTY.value
                 else:
-                    user.age = AgeChoices.OVER_FIFTY.value
+                    user.age_range = AgeChoices.OVER_FIFTY.value
 
             # 프로필 이미지 저장
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
             img_temp.flush()
-            user.profile_img.save(f'profile{user.pk}.jpg', File(img_temp))
+            user.avatar.save(f'avatar{user.pk}.jpg', File(img_temp))
             
             user.save()
 
@@ -156,11 +156,11 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_register",
             "gender",
-            "age",
+            "age_range",
             "zipcode",
             "address",
             "address_detail",
-            "profile_img",
+            "avatar",
             "created_at",
             "social",
             "carts",
