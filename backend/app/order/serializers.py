@@ -100,3 +100,50 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
         return instance
         
 
+class CancelSerializer(serializers.Serializer):
+    merchant_uid = serializers.CharField(write_only=True)
+    cancel_request_amount = serializers.CharField(write_only=True)
+    reason = serializers.CharField(write_only=True)
+    result = OrderSerializer(read_only=True)
+
+    def validate(self, attrs):
+        merchant_uid = attrs['merchant_uid']
+        # 결제정보 조회
+        order = get_object_or_404(Order, order_number=merchant_uid)
+        imp_uid, amount, cancel_amount  = order.imp_uid, order.total_paid, order.cancel_amount
+        cancelable_amount = amount - cancel_amount
+        if cancelable_amount <= 0:
+            raise ValidationError({"merchant_uid":"이미 전액환불된 주문입니다."})
+        
+        # 결제환불 요청
+        url = "https://api.iamport.kr/payments/cancel"
+        data = {
+            'imp_uid': imp_uid,
+            'amount': attrs['cancel_request_amount'],
+            'reason': attrs['reason'],
+            'checksum': cancelable_amount,
+        }
+        response = requests.post(url=url, data=data)
+        if not response.ok:
+            raise ValidationError('IAMPORT CANCEL API ERROR')
+            print(response.content)
+
+        data = response.json()
+        # 응답 코드가 200이라도 응답 body의 code가 0이 아니면 환불에 실패했다는 의미
+        if data['code'] != 0: 
+            msg = data['message']
+            raise ValidationError(f'환불 실패: {msg}')
+        return data
+
+    def create(self, validated_data):
+        response = validated_data['response'] # 환불 결과
+
+        # 환불 결과 동기화
+        merchant_uid = data['merchant_uid']
+        order = Order.objects.get(order_number=merchant_uid)
+        order.cancel_amount = response['cancel_amount']
+        order.is_cancelled = True
+        order.save()
+        return {
+            'result': order
+        }

@@ -3,10 +3,10 @@ from django.forms import ValidationError
 from django.shortcuts import render
 from django_filters import rest_framework as filters
 from django.db.models import Exists, OuterRef, Prefetch
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView, CreateAPIView
 from .models import Order, OrderProduct
 from ..review.models import Review
-from .serializers import OrderSerializer, OrderUpdateSerializer, OrderProductUpdateSerializer#, PaymentValidationSerializer
+from .serializers import OrderSerializer, OrderUpdateSerializer, OrderProductUpdateSerializer, CancelSerializer
 from .filters import OrderFilter, OrderProductFilter
 from ..common.permissions import IsStaff, IsOwner
 from .permissions import OrderProductPermission
@@ -130,3 +130,7 @@ def payment_complete(request):
     #결제완료 페이지 (현재는 해당 유저의 주문내역)
     #front에 return해줄 응답
     return redirect(redirect_url)
+
+
+class CancelCreateView(CreateAPIView):
+    serializer_class = CancelSerializer
