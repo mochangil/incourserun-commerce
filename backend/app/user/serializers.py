@@ -10,10 +10,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from app.user.models import User, Social, SocialKindChoices, AgeChoices, GenderChoices, Withdrawal
-from app.cart.serializers import CartSerializer
-from app.order.serializers import OrderSerializer
-from app.review.serializers import ReviewSerializer
-from app.product.serializers import ProductSerializer
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -135,13 +131,10 @@ class SocialSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
     is_superuser = serializers.BooleanField(read_only = True)
     is_staff = serializers.BooleanField(read_only = True)
-    is_register = serializers.BooleanField(read_only = True)
     social = SocialSerializer(read_only=True)
-    carts = CartSerializer(many=True, read_only=True)
-    orders = OrderSerializer(many=True, read_only=True)
-    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
@@ -168,9 +161,6 @@ class UserSerializer(serializers.ModelSerializer):
             "private_info_terms",
             "marketing_terms",
             "social",
-            "carts",
-            "orders",
-            "reviews"
         )
 
 class WithdrawalUserSerializer(serializers.ModelSerializer):
