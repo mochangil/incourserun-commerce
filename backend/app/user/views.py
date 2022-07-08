@@ -2,7 +2,7 @@ import requests
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView, ListAPIView
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
-from app.user.serializers import UserSocialLoginSerializer, UserSerializer, SocialSerializer, WithdrawalUserSerializer
+from app.user.serializers import UserSocialLoginSerializer, UserSerializer, SocialSerializer, WithdrawalSerializer
 from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
@@ -73,16 +73,16 @@ class MeReviewListView(ListAPIView):
         return Review.objects.filter(user = self.request.user)
 
 
-class UserWithdrawalListCreateView(ListCreateAPIView):
+class WithdrawalListCreateView(ListCreateAPIView):
     queryset = Withdrawal.objects.all()
     # print(queryset)
-    serializer_class = WithdrawalUserSerializer
+    serializer_class = WithdrawalSerializer
     #permission_classes = [UserPermission]
 
 
-class UserWithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class WithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Withdrawal.objects.all()
-    serializer_class = WithdrawalUserSerializer
+    serializer_class = WithdrawalSerializer
 
 
 def kakao_login(request):

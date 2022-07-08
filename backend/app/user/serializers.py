@@ -163,7 +163,7 @@ class UserSerializer(serializers.ModelSerializer):
             "social",
         )
 
-class WithdrawalUserSerializer(serializers.ModelSerializer):
+class WithdrawalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Withdrawal
         fields = (
@@ -182,11 +182,11 @@ class WithdrawalUserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
-        withdrawal_user.reasons = validated_data['reasons']
-        withdrawal_user.reason_others = validated_data['reason_others']
+        withdrawal, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
+        withdrawal.reasons = validated_data['reasons']
+        withdrawal.reason_others = validated_data['reason_others']
         # print(validated_data['user'])
-        withdrawal_user.save()
+        withdrawal.save()
         #해당 user 비활성화
         user = User.objects.get(email = validated_data.get('user'))
         # print(user)
