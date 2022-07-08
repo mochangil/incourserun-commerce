@@ -1,6 +1,7 @@
 from django.contrib import admin
 from . import models
 from django.utils.html import mark_safe
+from django.db.models import OuterRef, Exists
 
 
 class PhotoInline(admin.TabularInline):
@@ -31,11 +32,6 @@ class ReviewAdmin(admin.ModelAdmin):
     def count_photos(self, obj):
         return obj.photos.count()
     count_photos.short_description = "사진 개수"
-
-    def has_photo(self, obj):
-        return obj.photos.count() > 0
-    has_photo.short_description = "포토리뷰"
-    has_photo.boolean = True
 
     def has_reply(self, obj):
         return hasattr(obj, 'reply')
