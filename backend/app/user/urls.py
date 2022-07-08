@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
@@ -7,6 +7,7 @@ app_name = "user"
 urlpatterns = [
     path('', views.UserListView.as_view()),
     path('/<int:pk>', views.UserDetailUpdateDeleteView.as_view()),
+    path("/me", views.UserDetailUpdateDeleteView.as_view()),
     path('/social_login', views.UserSocialLoginView.as_view()),
     path('/withdrawal',views.UserWithdrawalListCreateView.as_view()),
     path('/withdrawal/<int:pk>',views.UserWithdrawalUpdateDeleteView.as_view()),

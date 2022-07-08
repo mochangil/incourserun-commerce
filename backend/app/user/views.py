@@ -1,5 +1,5 @@
 import requests
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.exceptions import ValidationError
 from app.user.serializers import UserSocialLoginSerializer, UserSerializer, CartSerializer, SocialSerializer,WithdrawalUserSerializer
 from django.shortcuts import redirect
@@ -13,6 +13,11 @@ from .filters import UserFilter
 from .permissions import UserPermission
 from django.db.models import Subquery, OuterRef
 from ..cart.models import Cart
+from django.utils.decorators import method_decorator
+from .decorator import account_ownership_required
+
+has_ownership = [account_ownership_required]
+methods = ['get','post','patch','delete']
 
 class UserSocialLoginView(CreateAPIView):
     """
@@ -31,12 +36,13 @@ class UserListView(ListAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = UserFilter
 
-
+# @method_decorator(has_ownership,'get')
 class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    User = get_user_model()
-    queryset = User.objects.all()
     serializer_class = UserSerializer
-    #permission_classes = [UserPermission]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return user.objects.all()
 
 
 def kakao_login(request):
