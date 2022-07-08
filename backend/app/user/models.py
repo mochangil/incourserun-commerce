@@ -73,7 +73,7 @@ class User(AbstractUser):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.email
+        return self.name
 
 
 class SocialKindChoices(models.TextChoices):

@@ -10,8 +10,8 @@ from django.http import HttpResponse
 class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
     list_display = (
         'id',
-        'username',
         'user',
+        'get_user_email',
         'created_at',
         'order_number',
         'shipping_name',
@@ -31,8 +31,10 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
     list_filter = ('shipping_status', 'is_cancelled')
     search_fields = ('=user__name', '^user__email', '^order_number', '=shipping_name', '^shipping_phone', '=shipping_zipcode', 'shipping_address', 'shipping_address_detail')
 
-    def username(self,obj):
-        return obj.user.username
+    def get_user_email(self,obj):
+        return obj.user.email
+    get_user_email.short_description = "이메일"
+
 
 @admin.register(models.OrderProduct)
 class OrderProductAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
