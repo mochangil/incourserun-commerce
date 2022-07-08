@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 class ShippingStatusChoices(models.TextChoices):
+    UNPAID = '미결제', '미결제'
     PAID = '결제완료', '결제완료'
     READY = '상품준비중', '상품준비중'
     SHIPPING = '배송중', '배송중'
@@ -14,7 +15,7 @@ class PayMethodChoices(models.TextChoices):
 
 class Order(models.Model):
     user = models.ForeignKey('user.User', verbose_name="주문자", related_name="orders", on_delete = models.CASCADE)
-    order_number = models.CharField(verbose_name="주문번호", max_length=10, unique=True, default="0000000000")
+    marchant_uid = models.CharField(verbose_name="주문번호", max_length=10, unique=True, default="0000000000")
     imp_uid = models.CharField(verbose_name="결제번호",max_length=30,null=True, blank=True)
     created_at = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
     shipping_name = models.CharField(verbose_name="수령인", max_length=10)
@@ -23,7 +24,7 @@ class Order(models.Model):
     shipping_address = models.CharField(verbose_name="배송주소", max_length=1000)
     shipping_address_detail = models.CharField(verbose_name="배송상세주소", max_length=1000, null=True, blank=True)
     shipping_request = models.CharField(verbose_name="배송요청사항", max_length=300, null=True, blank=True)
-    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
+    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8, default= "미결제")
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
     total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
@@ -37,7 +38,7 @@ class Order(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return f'Order {self.order_number} - {self.user}'
+        return f'Order {self.merchant_uid} - {self.user}'
 
 
 class OrderProduct(models.Model):
@@ -56,4 +57,4 @@ class OrderProduct(models.Model):
         ]
     
     def __str__(self):
-        return f'OrderProduct({self.id}) - Order {self.order.order_number} - {self.product}'
+        return f'OrderProduct({self.id}) - Order {self.order.merchant_uid} - {self.product}'

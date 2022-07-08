@@ -49,7 +49,7 @@ class OrderProductUpdateSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     User = get_user_model()
     order_products = OrderProductSerializer(many=True)
-    order_number = serializers.CharField(read_only=True)
+    merchant_uid = serializers.CharField(read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
@@ -59,7 +59,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'user',
             'created_at',
             'imp_uid',
-            'order_number',
+            'merchant_uid',
             'shipping_name',
             'shipping_phone',
             'shipping_zipcode',
@@ -80,7 +80,7 @@ class OrderSerializer(serializers.ModelSerializer):
         validated_data['user']=self.context['request'].user
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
-        order.order_number = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
+        order.merchant_uid = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
         order.save()
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
