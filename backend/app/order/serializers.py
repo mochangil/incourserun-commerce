@@ -72,6 +72,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'total_price',
             'delivery_fee',
             'total_paid',
+            'cancel_amount',
             'is_cancelled',
             'order_products'
         )

@@ -26,6 +26,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'total_price',
         'delivery_fee',
         'total_paid',
+        'cancel_amount',
         'is_cancelled'
     )
     list_filter = ('shipping_status', 'is_cancelled')

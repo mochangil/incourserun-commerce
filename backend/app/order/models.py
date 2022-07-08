@@ -28,7 +28,8 @@ class Order(models.Model):
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
     total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
     delivery_fee = models.IntegerField(verbose_name="배송비")
-    total_paid = models.IntegerField(verbose_name="결제금액", validators=[MinValueValidator(0)])
+    total_paid = models.IntegerField(verbose_name="결제금액", validators=[MinValueValidator(0)], default=0)
+    cancel_amount = models.IntegerField(verbose_name="환불금액", validators=[MinValueValidator(0)], default=0)
     is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
 
