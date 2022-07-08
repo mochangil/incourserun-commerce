@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 class ShippingStatusChoices(models.TextChoices):
+    UNPAID = '미결제', '미결제'
     PAID = '결제완료', '결제완료'
     READY = '상품준비중', '상품준비중'
     SHIPPING = '배송중', '배송중'
@@ -23,7 +24,7 @@ class Order(models.Model):
     shipping_address = models.CharField(verbose_name="배송주소", max_length=1000)
     shipping_address_detail = models.CharField(verbose_name="배송상세주소", max_length=1000, null=True, blank=True)
     shipping_request = models.CharField(verbose_name="배송요청사항", max_length=300, null=True, blank=True)
-    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
+    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8, default= "미결제")
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
     total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
