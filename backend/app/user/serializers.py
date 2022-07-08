@@ -10,10 +10,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from app.user.models import User, Social, SocialKindChoices, AgeChoices, GenderChoices, Withdrawal
-from app.cart.serializers import CartSerializer
-from app.order.serializers import OrderSerializer
-from app.review.serializers import ReviewSerializer
-from app.product.serializers import ProductSerializer
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -135,13 +131,10 @@ class SocialSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
     is_superuser = serializers.BooleanField(read_only = True)
     is_staff = serializers.BooleanField(read_only = True)
-    is_register = serializers.BooleanField(read_only = True)
     social = SocialSerializer(read_only=True)
-    carts = CartSerializer(many=True, read_only=True)
-    orders = OrderSerializer(many=True, read_only=True)
-    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
@@ -168,12 +161,9 @@ class UserSerializer(serializers.ModelSerializer):
             "private_info_terms",
             "marketing_terms",
             "social",
-            "carts",
-            "orders",
-            "reviews"
         )
 
-class WithdrawalUserSerializer(serializers.ModelSerializer):
+class WithdrawalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Withdrawal
         fields = (
@@ -192,11 +182,11 @@ class WithdrawalUserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        withdrawal_user, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
-        withdrawal_user.reasons = validated_data['reasons']
-        withdrawal_user.reason_others = validated_data['reason_others']
+        withdrawal, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
+        withdrawal.reasons = validated_data['reasons']
+        withdrawal.reason_others = validated_data['reason_others']
         # print(validated_data['user'])
-        withdrawal_user.save()
+        withdrawal.save()
         #해당 user 비활성화
         user = User.objects.get(email = validated_data.get('user'))
         # print(user)
