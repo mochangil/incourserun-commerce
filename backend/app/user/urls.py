@@ -5,6 +5,7 @@ from . import views
 app_name = "user"
 
 urlpatterns = [
+    path('/<int:pk>', views.UserDetailUpdateView.as_view()),
     path("/me", views.MeDetailUpdateDeleteView.as_view()),
     path("/me/carts", views.MeCartListView.as_view()),
     path("/me/orders", views.MeOrderListView.as_view()),

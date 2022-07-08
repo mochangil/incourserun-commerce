@@ -30,6 +30,12 @@ class UserSocialLoginView(CreateAPIView):
     permission_classes = [AllowAny]
 
 
+class UserDetailUpdateView(RetrieveUpdateAPIView):
+    User = get_user_model()
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class MeDetailUpdateDeleteView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
 
