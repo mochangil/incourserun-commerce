@@ -15,7 +15,7 @@ class OrderResources(resources.ModelResource):
     username = Field(attribute='get_user_name',column_name='주문자')
     created_at = Field(attribute='created_at',column_name='생성일시')
     imp_uid = Field(attribute='imp_uid',column_name='결제번호')
-    order_number = Field(attribute='order_number',column_name='주문번호')
+    merchant_uid = Field(attribute='merchant_uid',column_name='주문번호')
     shipping_name = Field(attribute='shipping_name',column_name='수령인')
     shipping_phone = Field(attribute='shipping_name',column_name='전화번호')
     shipping_zipcode = Field(attribute='shipping_name',column_name='우편번호')
@@ -38,7 +38,7 @@ class OrderResources(resources.ModelResource):
             'get_user_email',
             'created_at',
             'imp_uid',
-            'order_number',
+            'merchant_uid',
             'shipping_name',
             'shipping_phone',
             'shipping_zipcode',
@@ -64,7 +64,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'get_user_name',
         'get_user_email',
         'created_at',
-        'order_number',
+        'marchant_uid',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',
@@ -80,7 +80,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'is_cancelled'
     )
     list_filter = ('shipping_status', 'is_cancelled')
-    search_fields = ('=user__name', '^user__email', '^order_number', '=shipping_name', '^shipping_phone', '=shipping_zipcode', 'shipping_address', 'shipping_address_detail')
+    search_fields = ('=user__name', '^user__email', '^merchant_uid', '=shipping_name', '^shipping_phone', '=shipping_zipcode', 'shipping_address', 'shipping_address_detail')
 
     def get_user_email(self,obj):
         return obj.user.email
@@ -103,4 +103,4 @@ class OrderProductAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'is_cancelled'
     )
     list_filter = ('product', 'shipping_status', 'is_cancelled')
-    search_fields = ('^product__name', '^order__order_number', '=order__user__name', '=order__shipping_zipcode', 'order__shipping_address',)
+    search_fields = ('^product__name', '^order__merchant_uid', '=order__user__name', '=order__shipping_zipcode', 'order__shipping_address',)

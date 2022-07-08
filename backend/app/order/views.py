@@ -109,7 +109,7 @@ def payment_complete(request):
     merchant_uid = data['merchant_uid']
     status = data['status']
     amounts = data['amounts']
-    order = Order.objects.get(order_number=merchant_uid)
+    order = Order.objects.get(merchant_uid=merchant_uid)
     amounts_be_paid = order.total_paid
     res = payment_check(amounts,amounts_be_paid,status)
     
