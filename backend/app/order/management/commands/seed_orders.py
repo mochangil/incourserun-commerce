@@ -3,6 +3,7 @@ from datetime import date, datetime
 from faker import Faker
 from django.core.management.base import BaseCommand
 from django.contrib.admin.utils import flatten
+from django.db import transaction
 from django_seed import Seed
 from app.order.models import Order, OrderProduct
 from app.user.models import User
@@ -17,6 +18,7 @@ class Command(BaseCommand):
             "--number", default=1, type=int, help="How many orders you want to create"
         )
 
+    @transaction.atomic
     def handle(self, *args, **options):
         n = options.get("number")
         all_users = User.objects.all()
@@ -52,9 +54,8 @@ class Command(BaseCommand):
             for pk in created_clean:
                 order = Order.objects.get(pk=pk)
                 order.order_number = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
-                product_ids = random.sample(range(2,7), random.randint(1,5))
-                for i in product_ids:
-                    product = Product.objects.get(pk=i)
+                products = random.sample(list(Product.objects.all()), random.randint(1,5))
+                for product in products:
                     quantity = random.randint(1, 5)
                     OrderProduct.objects.create(
                         order = order,
