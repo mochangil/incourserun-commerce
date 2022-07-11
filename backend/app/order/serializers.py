@@ -233,12 +233,12 @@ class OrderPaymentSerializer(serializers.Serializer):
             message = "결제완료"
         elif res == 'unsupported features':
             # order.delete()
-            message = "지원하지 않는 결제 수단입니다."
-            raise ValidationError("지원하지 않는 결제 수단입니다.")
+            message = "결제 실패."
+            raise ValidationError("결제 실패.")
         else:
             # order.delete()
-            message = "환불되었거나 결제금액이 일치하지 않습니다. 위/변조된 결제"
-            raise ValidationError("환불되었거나 결제금액이 일치하지 않습니다. 위/변조된 결제")
+            message = "결제 실패"
+            raise ValidationError("결제 실패")
     
         data = {
             "status":status,
