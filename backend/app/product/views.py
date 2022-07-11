@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Subquery, OuterRef, Avg, Count
 from django.db.models.functions import Coalesce
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter
 from .models import Product, Hashtag
@@ -10,7 +10,7 @@ from .serializers import ProductSerializer, HashtagSerializer
 from .filters import ProductFilter
 
 # Create your views here.
-class ProductListCreateView(ListCreateAPIView):
+class ProductListView(ListAPIView):
     avg_rating_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(avg=Avg('rating')).values('avg')
     review_count_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(cnt=Count('id')).values('cnt')
     filter_backends = [filters.DjangoFilterBackend, OrderingFilter]
@@ -23,7 +23,7 @@ class ProductListCreateView(ListCreateAPIView):
     serializer_class = ProductSerializer
 
 
-class ProductDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class ProductDetailView(RetrieveAPIView):
     avg_rating_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(avg=Avg('rating')).values('avg')
     review_count_subquery = Review.objects.filter(product=OuterRef('id')).values('product').annotate(cnt=Count('id')).values('cnt')
 
