@@ -53,7 +53,7 @@ class Command(BaseCommand):
             total_price = 0
             for pk in created_clean:
                 order = Order.objects.get(pk=pk)
-                order.merchant_uid = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
+                order.merchant_uid = f'ORD{order.created_at.strftime("%y%m%d")}-{str(order.id).zfill(6)}'
                 products = random.sample(list(Product.objects.all()), random.randint(1,5))
                 for product in products:
                     quantity = random.randint(1, 5)

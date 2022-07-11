@@ -11,4 +11,5 @@ urlpatterns = [
     path('/payment/complete/mobile',views.payment_complete),
     # path('/payment_validation',views.PaymentValidationView.as_view())
     path('/iamport_webhook',views.payment_complete),
+    path('/payment/cancel', views.CancelCreateView.as_view())
 ]
