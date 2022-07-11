@@ -54,9 +54,14 @@ class OrderResources(resources.ModelResource):
             'is_cancelled'
     )
 
+class OrderProductInline(admin.TabularInline):
+    model = models.OrderProduct
+
 # Register your models here.
 @admin.register(models.Order)
 class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
+
+    inlines = (OrderProductInline,)
     resource_class = OrderResources
 
     list_display = (

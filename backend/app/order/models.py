@@ -24,7 +24,7 @@ class Order(models.Model):
     shipping_address = models.CharField(verbose_name="배송주소", max_length=1000)
     shipping_address_detail = models.CharField(verbose_name="배송상세주소", max_length=1000, null=True, blank=True)
     shipping_request = models.CharField(verbose_name="배송요청사항", max_length=300, null=True, blank=True)
-    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8, default= "미결제")
+    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8, default="미결제")
     pay_method = models.CharField(verbose_name="결제수단", choices=PayMethodChoices.choices, max_length=4)
     pay_date = models.DateField(verbose_name="결제일자", auto_now_add=True)
     total_price = models.IntegerField(verbose_name="총 상품금액", validators=[MinValueValidator(0)])
@@ -47,7 +47,7 @@ class OrderProduct(models.Model):
     product = models.ForeignKey('product.Product', verbose_name="상품", related_name="order_products", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="수량", validators=[MinValueValidator(1)])
     price = models.IntegerField(verbose_name="상품가격", validators=[MinValueValidator(0)])
-    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8)
+    shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8, default="미결제")
     is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
     class Meta:
