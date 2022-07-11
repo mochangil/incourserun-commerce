@@ -10,8 +10,8 @@ class CartSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     def create(self, validated_data):
-        validated_data['user']=self.context['request'].user
-        cart, created = Cart.objects.get_or_create(user=validated_data['user'].id, product=validated_data['product'])
+        # validated_data['user']=self.context['request'].user
+        cart, created = Cart.objects.get_or_create(user=validated_data['user'], product=validated_data['product'])
         quantity = validated_data.get('quantity')
         if quantity is not None:
             if created: 
