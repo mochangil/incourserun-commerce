@@ -166,6 +166,9 @@ def payment_check(amounts, amounts_be_paid,status):
 class OrderPaymentSerializer(serializers.Serializer):
     imp_uid = serializers.CharField(write_only=True)
     merchant_uid = serializers.CharField(write_only=True)
+    status = serializers.CharField(read_only=True)
+    message = serializers.CharField(read_only=True)
+    order = OrderSerializer(read_only=True)
 
 
     def validate(self, attrs):
@@ -186,6 +189,7 @@ class OrderPaymentSerializer(serializers.Serializer):
         data = validated_data['data']
         imp_uid = validated_data['imp_uid']
         data = self.imp_validation(data,imp_uid)
+        print("create:", data)
         return data
 
 
@@ -222,14 +226,16 @@ class OrderPaymentSerializer(serializers.Serializer):
     def imp_validation(self,data,imp_uid):
         merchant_uid = data['merchant_uid']
         status = data['status']
-        amounts = data['amounts']
+        amounts = data['amount']
         order = Order.objects.get(merchant_uid=merchant_uid)
         amounts_be_paid = order.total_paid
         res = payment_check(amounts,amounts_be_paid,status)
+        print(res)
     
         if res == "결제완료":
             order.imp_uid = imp_uid
             order.shipping_status = "결제완료"
+            order.save()
             message = "결제완료"
         elif res == 'unsupported features':
             # order.delete()
@@ -243,7 +249,9 @@ class OrderPaymentSerializer(serializers.Serializer):
         data = {
             "status":status,
             "message":message,
-        }    
+            "order": order
+        }
+        print(data)  
         return data
         #결제완료 페이지 (현재는 해당 유저의 주문내역)
         #front에 return해줄 응답
