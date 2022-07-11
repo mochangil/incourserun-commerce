@@ -64,7 +64,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'get_user_name',
         'get_user_email',
         'created_at',
-        'marchant_uid',
+        'merchant_uid',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',

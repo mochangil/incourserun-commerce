@@ -15,7 +15,7 @@ class PayMethodChoices(models.TextChoices):
 
 class Order(models.Model):
     user = models.ForeignKey('user.User', verbose_name="주문자", related_name="orders", on_delete = models.CASCADE)
-    marchant_uid = models.CharField(verbose_name="주문번호", max_length=10, unique=True, default="0000000000")
+    merchant_uid = models.CharField(verbose_name="주문번호", max_length=16, unique=True, default="ORD000000-000000")
     imp_uid = models.CharField(verbose_name="결제번호",max_length=30,null=True, blank=True)
     created_at = models.DateTimeField(verbose_name="주문일시", auto_now_add=True)
     shipping_name = models.CharField(verbose_name="수령인", max_length=10)

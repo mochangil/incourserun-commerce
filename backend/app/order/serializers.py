@@ -81,7 +81,7 @@ class OrderSerializer(serializers.ModelSerializer):
         validated_data['user']=self.context['request'].user
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
-        order.merchant_uid = order.created_at.strftime("%y%m%d") + str(order.id).zfill(4)
+        order.merchant_uid = f'ORD{order.created_at.strftime("%y%m%d")}-{str(order.id).zfill(6)}'
         order.save()
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
@@ -109,7 +109,7 @@ class CancelSerializer(serializers.Serializer):
     def validate(self, attrs):
         merchant_uid = attrs['merchant_uid']
         # 결제정보 조회
-        order = get_object_or_404(Order, order_number=merchant_uid)
+        order = get_object_or_404(Order, merchant_uid=merchant_uid)
         imp_uid, amount, cancel_amount  = order.imp_uid, order.total_paid, order.cancel_amount
         cancelable_amount = amount - cancel_amount
         if cancelable_amount <= 0:
@@ -140,7 +140,7 @@ class CancelSerializer(serializers.Serializer):
 
         # 환불 결과 동기화
         merchant_uid = data['merchant_uid']
-        order = Order.objects.get(order_number=merchant_uid)
+        order = Order.objects.get(merchant_uid=merchant_uid)
         order.cancel_amount = response['cancel_amount']
         order.is_cancelled = True
         order.save()
