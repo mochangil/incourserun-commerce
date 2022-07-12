@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
+from django.http import HttpResponse
 from import_export import resources
 from import_export.widgets import ForeignKeyWidget
 from import_export.fields import Field
 from import_export.admin import ImportExportMixin,ExportActionMixin
-
 from . import models
-from django.http import HttpResponse
+
 
 class OrderResources(resources.ModelResource):
     User=get_user_model()
@@ -57,13 +59,43 @@ class OrderResources(resources.ModelResource):
 class OrderProductInline(admin.TabularInline):
     model = models.OrderProduct
 
-# Register your models here.
+class CreatedAtFilter(admin.SimpleListFilter):
+    title = '주문일시'
+    parameter_name = 'created_at'
+
+    def lookups(self, request, model_admin):
+        return (
+            ("오늘", "오늘"),
+            ("최근 24시간", "최근 24시간"),
+            ("최근 1주일", "최근 1주일"),
+            ("최근 1개월", "최근 1개월"),
+            ("최근 3개월", "최근 3개월"),
+        )
+
+    def queryset(self, request, queryset):
+        enddate = datetime.now()
+        if self.value() == "오늘":
+            today = date.today()
+            return queryset.filter(created_at__startswith=today)
+        if self.value() == "최근 24시간":
+            startdate = enddate - relativedelta(hours=24)
+            return queryset.filter(created_at__range=[startdate, enddate])
+        if self.value() == "최근 1주일":
+            startdate = enddate - relativedelta(days=7)
+            return queryset.filter(created_at__range=[startdate, enddate])
+        if self.value() == "최근 1개월":
+            startdate = enddate - relativedelta(months=1)
+            return queryset.filter(created_at__range=[startdate, enddate])
+        if self.value() == "최근 3개월":
+            startdate = enddate - relativedelta(months=3)
+            return queryset.filter(created_at__range=[startdate, enddate])
+
+
 @admin.register(models.Order)
 class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
 
     inlines = (OrderProductInline,)
     resource_class = OrderResources
-
     list_display = (
         'id',
         'get_user_name',
@@ -85,7 +117,7 @@ class OrderAdmin(ImportExportMixin,ExportActionMixin,admin.ModelAdmin):
         'cancel_amount',
         'is_cancelled'
     )
-    list_filter = ('shipping_status', 'is_cancelled')
+    list_filter = ('shipping_status', 'is_cancelled', CreatedAtFilter)
     search_fields = ('=user__name', '^user__email', '^merchant_uid', '=shipping_name', '^shipping_phone', '=shipping_zipcode', 'shipping_address', 'shipping_address_detail')
 
     def get_user_email(self,obj):
