@@ -5,11 +5,9 @@ app_name = "order"
 
 urlpatterns = [
     path('', views.OrderListCreateView.as_view()),
-    path('/<int:pk>', views.OrderDetailUpdateDeleteView.as_view()),
-    path('/order-products/<int:pk>', views.OrderProductDetailUpdateView.as_view()),
-    path('/payment/complete',views.payment_complete),
-    path('/payment/complete/mobile',views.payment_complete),
-    # path('/payment_validation',views.PaymentValidationView.as_view())
-    path('/iamport_webhook',views.payment_complete),
-    path('/payment/cancel', views.CancelCreateView.as_view())
+    path('/<int:pk>', views.OrderDetailView.as_view()),
+    path('/order-products/<int:pk>', views.OrderProductDetailView.as_view()),
+    path('/payment/complete',views.OrderPaymentView.as_view()),
+    path('/payment/cancel', views.CancelCreateView.as_view()),
+    path('/payment/webhook',views.OrderPaymentView.as_view()),
 ]

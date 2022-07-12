@@ -1,8 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from .models import Order, OrderProduct
 from ..review.serializers import ReviewSerializer
 from django.contrib.auth import get_user_model
+from django.conf import settings
+import requests
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -11,39 +14,6 @@ class OrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProduct
         fields = ('id', 'product', 'quantity', 'price', 'shipping_status', 'is_cancelled', 'has_review')
-
-
-class OrderProductUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderProduct
-        fields = ('is_cancelled',)
-
-    def update(self, instance, validated_data):
-        if instance.shipping_status != "결제완료":
-            raise ValidationError({'status':'상품이 결제완료 상태일 때만 변경 가능합니다.'})
-        instance.is_cancelled = validated_data['is_cancelled']
-
-        # 총 주문금액 업데이트
-        order = instance.order
-        if instance.is_cancelled:
-            # 주문취소
-            order.total_price -= instance.price * instance.quantity
-            if order.total_price == 0:
-                order.is_cancelled = True
-                order.delivery_fee = 0
-            elif order.total_price < 30000:
-                order.delivery_fee = 3000
-        else:
-            # 주문취소 철회
-            order.is_cancelled = False
-            order.total_price += instance.price * instance.quantity
-            if order.total_price < 30000:
-                order.delivery_fee = 3000
-            else:
-                order.delivery_fee = 0
-        instance.save()
-        order.save()
-        return instance
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -86,18 +56,6 @@ class OrderSerializer(serializers.ModelSerializer):
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
         return order
-
-class OrderUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ('is_cancelled',)
-
-    def update(self, instance, validated_data):
-        print(instance)
-        if instance.shipping_status != "결제완료":
-            raise ValidationError({'status':'주문이 결제완료 상태일 때만 변경 가능합니다.'})
-        instance.is_cancelled = validated_data['is_cancelled']
-        return instance
         
 
 class CancelSerializer(serializers.Serializer):
@@ -139,7 +97,7 @@ class CancelSerializer(serializers.Serializer):
         response = validated_data['response'] # 환불 결과
 
         # 환불 결과 동기화
-        merchant_uid = data['merchant_uid']
+        merchant_uid = validated_data['merchant_uid']
         order = Order.objects.get(merchant_uid=merchant_uid)
         order.cancel_amount = response['cancel_amount']
         order.is_cancelled = True
@@ -147,3 +105,98 @@ class CancelSerializer(serializers.Serializer):
         return {
             'result': order
         }
+
+def payment_check(amounts, amounts_be_paid,status):
+    res = ""
+    if amounts == amounts_be_paid:
+        if status == "ready":
+            res = "unsupported features"
+        elif status == "paid":
+            res = "결제완료"
+        else:
+            res = "cancelled"
+    
+    return res
+
+class OrderPaymentSerializer(serializers.Serializer):
+    imp_uid = serializers.CharField(write_only=True)
+    merchant_uid = serializers.CharField(write_only=True)
+    status = serializers.CharField(read_only=True)
+    message = serializers.CharField(read_only=True)
+    order = OrderSerializer(read_only=True)
+
+    def validate(self, attrs):
+        imp_uid = attrs['imp_uid']
+        merchant_uid = attrs['merchant_uid']
+        access_token = self.get_token()
+        print(access_token)
+        data = self.get_imp_info(access_token,attrs['imp_uid'])
+        print(data)
+
+        attrs['access_token'] = access_token
+        attrs['data'] = data
+        print(attrs)
+        return attrs
+
+
+    def create(self, validated_data):
+        data = validated_data['data']
+        imp_uid = validated_data['imp_uid']
+        data = self.imp_validation(data,imp_uid)
+        print("create:", data)
+        return data
+
+
+    def get_token(self): #토큰 발급
+        url = 'https://api.iamport.kr/users/getToken'
+        data = {
+            'imp_key': settings.IMP_KEY,
+            'imp_secret': settings.IMP_SECRET
+        }
+        token = requests.post(url=url,data=data)
+        access_token = token.json()
+        access_token = access_token['response'].get('access_token')
+        print("access_token => \n",access_token,"\n")
+        return access_token
+
+    def get_imp_info(self,access_token,imp_uid): #결제정보 조회
+        url = f"https://api.iamport.kr/payments/{imp_uid}"
+        header = {'Authorization':f'Bearer {access_token}'}
+        imp_inf = requests.get(url=url,headers=header)
+        print("imp_inf => \n",imp_inf)
+        if not imp_inf.ok:
+            raise ValidationError("Paydata Error")
+        imp_inf = imp_inf.json()
+        data = imp_inf['response']
+        return data
+    
+    def imp_validation(self,data,imp_uid): #결제정보 검증
+        merchant_uid = data['merchant_uid']
+        status = data['status']
+        amounts = data['amount']
+        order = Order.objects.get(merchant_uid=merchant_uid)
+        amounts_be_paid = order.total_paid
+        res = payment_check(amounts,amounts_be_paid,status)
+        print(res)
+    
+        if res == "결제완료":
+            order.imp_uid = imp_uid
+            order.shipping_status = "결제완료"
+            order.save()
+            message = "결제완료"
+        elif res == 'unsupported features':
+            # order.delete()
+            message = "결제 실패."
+            raise ValidationError("결제 실패.")
+        else:
+            # order.delete()
+            message = "결제 실패"
+            raise ValidationError("결제 실패")
+    
+        data = {
+            "status":status,
+            "message":message,
+            "order": order
+        }
+        print(data)  
+        return data
