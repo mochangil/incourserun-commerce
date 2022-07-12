@@ -11,6 +11,7 @@ db.json
 venv
 media
 backend/.env
+.env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

@@ -1,5 +1,7 @@
+from pyexpat import model
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 class UserManager(DjangoUserManager):
@@ -28,12 +30,39 @@ class UserManager(DjangoUserManager):
         return self._create_user(username, password, **extra_fields)
 
 
+class GenderChoices(models.TextChoices):
+    MALE = '남성','남성' 
+    FEMALE = '여성', '여성'
+
+class AgeChoices(models.TextChoices):
+    TEEN = '10대', '10대'
+    TWENTY = '20대', '20대'
+    THIRTY = '30대', '30대'
+    FORTY = '40대', '40대'
+    OVER_FIFTY = '50대 이상', '50대 이상'
+
+
+
 class User(AbstractUser):
     first_name = None
     last_name = None
-
+    
+    name = models.CharField(verbose_name="이름", max_length=10, null=True, blank=True)
+    nickname = models.CharField(verbose_name="닉네임", max_length=10)
     email = models.EmailField(verbose_name="이메일", unique=True)
-    phone = models.CharField(verbose_name="휴대폰", max_length=11, null=True, blank=True)
+    phone = models.CharField(verbose_name="휴대폰", max_length=13, null=True, blank=True)
+    gender = models.CharField(verbose_name="성별", max_length=6, choices=GenderChoices.choices, null=True, blank=True)
+    age_range = models.CharField(verbose_name="연령대", max_length=6, choices=AgeChoices.choices, null=True, blank=True)
+    zipcode = models.CharField(verbose_name="우편번호", max_length=7, null=True, blank=True)
+    address = models.CharField(verbose_name="주소", max_length=1000, null=True, blank=True)
+    address_detail = models.CharField(verbose_name="상세주소", max_length=1000, null=True, blank=True)
+    avatar = models.ImageField(verbose_name="프로필사진", upload_to='profile', null=True, blank=True)
+    created_at = models.DateTimeField(verbose_name="가입일시", auto_now_add=True)
+    is_register = models.BooleanField(verbose_name="등록여부", default=False)
+    agree_all_terms = models.BooleanField(verbose_name="약관전체동의", default=False)
+    required_terms = models.BooleanField(verbose_name="필수약관동의", default=False)
+    private_info_terms = models.BooleanField(verbose_name="개인정보동의", default=False)
+    marketing_terms = models.BooleanField(verbose_name="마케팅동의", default=False)
 
     USERNAME_FIELD = "username"
 
@@ -44,7 +73,7 @@ class User(AbstractUser):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.email
+        return self.name
 
 
 class SocialKindChoices(models.TextChoices):
@@ -62,3 +91,23 @@ class Social(models.Model):
     class Meta:
         verbose_name = '소셜'
         verbose_name_plural = verbose_name
+        
+
+class ReasonChoices(models.TextChoices):
+    CHANGE_ID = '아이디 변경(재가입)', '아이디 변경(재가입)'
+    LOW_FREQUENCY = '낮은 구매 빈도', '낮은 구매 빈도'
+    SERVICE_DISSATISFACTION = '서비스 및 고객지원 불만족', '서비스 및 고객지원 불만족'
+    OTHER_BRAND = '타 브랜드 이용', '타 브랜드 이용'
+    ETC = "기타","기타"
+
+class Withdrawal(models.Model):
+    #one to one field
+    user = models.ForeignKey('user.User',related_name="withdrawal",on_delete=models.CASCADE)
+    reasons = models.CharField(verbose_name="탈퇴사유",max_length=20,choices = ReasonChoices.choices)
+    reason_others = models.TextField(verbose_name="기타사유",max_length=1000, null=True)
+    created_at = models.DateTimeField(verbose_name="탈퇴일시",auto_now_add=True)
+
+    class Meta:
+        verbose_name = "회원탈퇴"
+        verbose_name_plural = verbose_name
+        

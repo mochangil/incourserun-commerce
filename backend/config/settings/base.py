@@ -1,7 +1,8 @@
 import datetime
 from pathlib import Path
-
+import os
 from dotenv import load_dotenv
+# from iamport import Iamport
 
 load_dotenv()
 
@@ -15,8 +16,11 @@ ALLOWED_HOSTS = [".elasticbeanstalk.com"]
 
 LOCAL_APPS = [
     "app.staticfile",
-    "app.example.apps.ExampleConfig",
     "app.user.apps.UserConfig",
+    "app.cart.apps.CartConfig",
+    "app.product.apps.ProductConfig",
+    "app.order.apps.OrderConfig",
+    "app.review.apps.ReviewConfig"
 ]
 
 THIRD_PARTY_APPS = [
@@ -27,6 +31,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "multiselectfield",
     "storages",
+    "import_export",
 ]
 
 DJANGO_APPS = [
@@ -110,12 +115,13 @@ USE_TZ = False
 
 SITE_NAME = "인코스런"
 SITE_LOGO = "img/logo.png"  # static/img/logo.png 변경
-SITE_URL = "https://frontend-domain.com"
+SITE_URL = "http://172.30.1.17:3000" # 프론트엔드 url
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/media/"
 
 # AUTH_USER_MODEL
 AUTH_USER_MODEL = "user.User"
@@ -159,6 +165,10 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": (
+        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
+    ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
@@ -195,8 +205,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 # S3
-AWS_REGION = "aws-region-name"
-AWS_STORAGE_BUCKET_NAME = ""
+AWS_REGION = "ap-northeast-2"
+AWS_STORAGE_BUCKET_NAME = "incourserun-commerce"
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=864000"}
 AWS_S3_FILE_OVERWRITE = False
@@ -207,11 +217,39 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 MEDIAFILES_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/"
 
+# File Upload
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+MAX_UPLOAD_SIZE = 5242880
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
 # KAKAO
-KAKAO_CLIENT_ID = 'USER KAKAO CLIENT ID'
-KAKAO_CLIENT_SECRET = 'USER KAKAO CLIENT SECRET'
+KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
+KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
+KAKAO_REDIRECT_URI = SITE_URL + "/login/kakao/callback"
+
 '''
 KAKAO LOGIN URL
 https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${SOCIAL_REDIRECT_URL}&state=kakao
 https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=29bebceec427c5cb9e5a35627b29036e&redirect_uri=http://localhost:3000/login/social/callback&state=kakao
 '''
+
+# Postgre
+DB_USERNAME = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# Iamport
+IMP_KEY = os.getenv('IAMPORT_KEY')
+IMP_SECRET = os.getenv('IAMPORT_SECRET')
+ORDER_ROOT = "http://127.0.0.1:8000/v1/orders"
+
+# iamport = Iamport(
+#     imp_key=IMP_KEY,
+#     imp_secret=(
+#         IMP_SECRET
+#     )
+# )
