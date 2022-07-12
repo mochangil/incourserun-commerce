@@ -17,12 +17,7 @@ class Review(models.Model):
 
     def __str__(self):
         return f'Review({self.id}) - {self.user} - {self.product}'
-
-    def has_photo(self):
-        return self.photos.exists()
-    has_photo.short_description = "포토리뷰"
-    has_photo.boolean = True
-
+ 
 
 class Photo(models.Model):
     review = models.ForeignKey('review.Review', verbose_name="리뷰", related_name="photos", on_delete=models.CASCADE)
