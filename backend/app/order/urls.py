@@ -9,5 +9,5 @@ urlpatterns = [
     path('/order-products/<int:pk>', views.OrderProductDetailView.as_view()),
     path('/payment/complete',views.OrderPaymentView.as_view()),
     path('/payment/cancel', views.CancelCreateView.as_view()),
-    path('/payment/complete',views.OrderPaymentView.as_view()),
+    path('/payment/webhook',views.OrderPaymentView.as_view()),
 ]

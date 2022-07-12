@@ -125,7 +125,6 @@ class OrderPaymentSerializer(serializers.Serializer):
     message = serializers.CharField(read_only=True)
     order = OrderSerializer(read_only=True)
 
-
     def validate(self, attrs):
         imp_uid = attrs['imp_uid']
         merchant_uid = attrs['merchant_uid']
@@ -148,7 +147,7 @@ class OrderPaymentSerializer(serializers.Serializer):
         return data
 
 
-    def get_token(self):
+    def get_token(self): #토큰 발급
         url = 'https://api.iamport.kr/users/getToken'
         data = {
             'imp_key': settings.IMP_KEY,
@@ -160,25 +159,18 @@ class OrderPaymentSerializer(serializers.Serializer):
         print("access_token => \n",access_token,"\n")
         return access_token
 
-    def get_imp_info(self,access_token,imp_uid):
+    def get_imp_info(self,access_token,imp_uid): #결제정보 조회
         url = f"https://api.iamport.kr/payments/{imp_uid}"
         header = {'Authorization':f'Bearer {access_token}'}
         imp_inf = requests.get(url=url,headers=header)
         print("imp_inf => \n",imp_inf)
-        # if not imp_inf.ok:
-        #     raise ValidationError("Paydata Error")
+        if not imp_inf.ok:
+            raise ValidationError("Paydata Error")
         imp_inf = imp_inf.json()
         data = imp_inf['response']
-        #test data
-        # data = {
-    #     'merchant_uid':merchant_uid,
-    #     'status':'paid',
-    #     'amounts':10,
-    #     }
-    # print(data)
         return data
     
-    def imp_validation(self,data,imp_uid):
+    def imp_validation(self,data,imp_uid): #결제정보 검증
         merchant_uid = data['merchant_uid']
         status = data['status']
         amounts = data['amount']
@@ -208,5 +200,3 @@ class OrderPaymentSerializer(serializers.Serializer):
         }
         print(data)  
         return data
-        #결제완료 페이지 (현재는 해당 유저의 주문내역)
-        #front에 return해줄 응답

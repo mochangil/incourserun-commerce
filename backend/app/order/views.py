@@ -9,7 +9,7 @@ from ..review.models import Review
 from .serializers import OrderSerializer, OrderProductSerializer, CancelSerializer, OrderPaymentSerializer
 from .filters import OrderFilter, OrderProductFilter
 from ..common.permissions import IsStaff, IsOwner
-from .permissions import OrderProductPermission
+from .permissions import OrderProductPermission,OrderWebhookPermission
 from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
@@ -48,15 +48,4 @@ class CancelCreateView(CreateAPIView):
 
 class OrderPaymentView(CreateAPIView):
     serializer_class = OrderPaymentSerializer
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    print("Your ip = ",ip)
-    if ip == '127.0.0.1' or ip == '52.78.100.19' or ip == '52.78.48.223':
-        return HttpResponseRedirect(reverse('order:order-pay'))
-    else:
-        raise ValidationError("Unauthorized request ip")
+    permission_classes = [OrderWebhookPermission]
