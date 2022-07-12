@@ -17,16 +17,29 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     }
 # }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "commerce",
+#         "USER": os.getenv("DB_USER"),
+#         "PASSWORD": os.getenv("DB_PASSWORD"),
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "commerce",
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": "commerce.cujsvjlde9dh.ap-northeast-2.rds.amazonaws.com",
         "PORT": "5432",
     }
 }
+
+
 
 
 # LOGGING

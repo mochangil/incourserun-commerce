@@ -1,4 +1,4 @@
-from xml.dom import ValidationErr
+from django.http import HttpResponseRedirect
 from django.forms import ValidationError
 from django.shortcuts import render
 from django_filters import rest_framework as filters
@@ -9,10 +9,11 @@ from ..review.models import Review
 from .serializers import OrderSerializer, OrderProductSerializer, CancelSerializer, OrderPaymentSerializer
 from .filters import OrderFilter, OrderProductFilter
 from ..common.permissions import IsStaff, IsOwner
-from .permissions import OrderProductPermission
+from .permissions import OrderProductPermission,OrderWebhookPermission
 from django.shortcuts import redirect
 from django.db.models import Prefetch
 from django.conf import settings
+from django.urls import reverse
 import requests
 
 
@@ -47,3 +48,4 @@ class CancelCreateView(CreateAPIView):
 
 class OrderPaymentView(CreateAPIView):
     serializer_class = OrderPaymentSerializer
+    permission_classes = [OrderWebhookPermission]
