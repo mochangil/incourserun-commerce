@@ -16,10 +16,10 @@ jobs:
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v18
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: commerce
-          environment_name: Commerce-env
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID2 }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY2 }}
+          application_name: incourserun-commerce2
+          environment_name: Incourseruncommerce2-env
           version_label: ${{ github.sha }}
           region: ap-northeast-2
           wait_for_deployment: true
