@@ -13,12 +13,13 @@ try:
 except requests.exceptions.RequestException as e:
     print("no ec2 instance")
 
-CORS_ALLOWED_ORIGINS = [
-    "https://incourserun.cf",
-    "https://www.incourserun.cf",
-    "https://2-incourserun-commerce-fe.vercel.app",
-    "http://localhost:3000"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://incourserun.cf",
+#     "https://www.incourserun.cf",
+#     "https://2-incourserun-commerce-fe.vercel.app",
+#     "http://localhost:3000"
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # DATABASES = {
 #     "default": {
