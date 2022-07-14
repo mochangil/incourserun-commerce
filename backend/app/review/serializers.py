@@ -51,7 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        validated_data['user']=self.context['request'].user
+        # validated_data['user']=self.context['request'].user
         # 리뷰 저장
         validated_data['product'] = validated_data['order_product'].product
         review = Review.objects.create(**validated_data)
