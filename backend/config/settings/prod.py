@@ -16,6 +16,7 @@ except requests.exceptions.RequestException as e:
 CORS_ALLOWED_ORIGINS = [
     "https://incourserun.cf",
     "https://www.incourserun.cf",
+    "2-incourserun-commerce-fe.vercel.app",
     "http://localhost:3000"
 ]
 
