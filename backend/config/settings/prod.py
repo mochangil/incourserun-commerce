@@ -43,9 +43,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "commerce",
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "USER": 'root',
+        "PASSWORD": 'incourserun',
         "HOST": "commerce.cujsvjlde9dh.ap-northeast-2.rds.amazonaws.com",
         "PORT": "5432",
     }
 }
+print(DATABASES)
