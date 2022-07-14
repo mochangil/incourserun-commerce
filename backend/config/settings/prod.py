@@ -14,16 +14,17 @@ except requests.exceptions.RequestException as e:
     print("no ec2 instance")
 
 CORS_ALLOWED_ORIGINS = [
-    "https://frontend-domain.com",
-    "https://www.frontend-domain.com",
+    "https://incourserun.cf",
+    "https://www.incourserun.cf",
+    "http://localhost:3000"
 ]
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 # DATABASES = {
 #     "default": {
@@ -35,3 +36,14 @@ DATABASES = {
 #         "PORT": "5432",
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "commerce",
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "commerce.cujsvjlde9dh.ap-northeast-2.rds.amazonaws.com",
+        "PORT": "5432",
+    }
+}
