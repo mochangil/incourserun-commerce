@@ -40,8 +40,6 @@ class MeDetailUpdateDeleteView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
-        if self.request.user.is_authenticated == False:
-            raise ValidationError({'user': '인증되지 않은 사용자입니다.'})
         return self.request.user
 
 
@@ -49,8 +47,6 @@ class MeCartListView(ListAPIView):
     serializer_class = CartSerializer
 
     def get_queryset(self):
-        if self.request.user.is_authenticated == False:
-            raise ValidationError({'user': '인증되지 않은 사용자입니다.'})
         return Cart.objects.filter(user = self.request.user)
 
 
@@ -58,8 +54,6 @@ class MeOrderListView(ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        if self.request.user.is_authenticated == False:
-            raise ValidationError({'user': '인증되지 않은 사용자입니다.'})
         return Order.objects.filter(user = self.request.user)
 
 
@@ -68,8 +62,6 @@ class MeReviewListView(ListAPIView):
     pagination_class = ReviewPagination
 
     def get_queryset(self):
-        if self.request.user.is_authenticated == False:
-            raise ValidationError({'user': '인증되지 않은 사용자입니다.'})
         return Review.objects.filter(user = self.request.user)
 
 
