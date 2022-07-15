@@ -20,6 +20,8 @@ class OrderSerializer(serializers.ModelSerializer):
     User = get_user_model()
     order_products = OrderProductSerializer(many=True)
     merchant_uid = serializers.CharField(read_only=True)
+    imp_uid = serializers.CharField(read_only=True)
+    cancel_amount = serializers.IntegerField(read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
@@ -46,6 +48,22 @@ class OrderSerializer(serializers.ModelSerializer):
             'is_cancelled',
             'order_products'
         )
+
+    def validate(self, attrs):
+        # 프론트에서 보낸 금액이랑 백에서 계산한 금액이랑 비교
+        total_price = 0
+        for order_product in attrs['order_products']:
+            total_price += order_product['price'] * order_product['quantity']
+        if total_price != attrs['total_price']:
+            raise ValidationError("total_price", "총 상품금액이 계산된 값과 일치하지 않습니다.")
+        delivery_fee = 0
+        if total_price < 30000:
+            delivery_fee = 3000
+        if delivery_fee != attrs['delivery_fee']:
+            raise ValidationError("delivery_fee", "배송비가 일치하지 않습니다.")
+        if attrs['total_price'] + attrs['delivery_fee'] != attrs['total_paid']:
+            raise ValidationError("total_paid", "결제금액이 총 상품금액 + 배송비와 일치하지 않습니다.")
+        return attrs
 
     def create(self, validated_data):
         validated_data['user']=self.context['request'].user
