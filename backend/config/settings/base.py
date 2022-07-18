@@ -115,7 +115,7 @@ USE_TZ = False
 
 SITE_NAME = "인코스런"
 SITE_LOGO = "img/logo.png"  # static/img/logo.png 변경
-SITE_URL = os.getenv("SITE_URL") # 프론트엔드 url
+SITE_URL = "https://incourserun.cf" # 프론트엔드 url
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
