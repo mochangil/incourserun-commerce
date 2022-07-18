@@ -175,8 +175,7 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        if attrs['user'] != self.context['request'].user:
-            raise ValidationError({'user':'본인만 탈퇴 요청을 할 수 있습니다.'})
+        attrs['user'] = self.context['request'].user
         if attrs['reasons'] != '기타' and 'reason_others' in attrs:
             raise ValidationError({'reason_others': "'기타'를 선택했을 때만 기타사유를 작성할 수 있습니다."})
         return attrs

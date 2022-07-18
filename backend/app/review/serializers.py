@@ -41,8 +41,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        # if attrs['user'] != self.context['request'].user:
-        #     raise ValidationError({'user': '요청인과 작성자가 일치하지 않습니다.'})
+        attrs['user'] = self.context['request'].user
         if attrs['user'] != attrs['order_product'].order.user:
             raise ValidationError({'user': '주문자와 작성자가 일치하지 않습니다.'})
         if attrs['order_product'].shipping_status != "배송완료":
@@ -51,7 +50,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        # validated_data['user']=self.context['request'].user
         # 리뷰 저장
         validated_data['product'] = validated_data['order_product'].product
         review = Review.objects.create(**validated_data)
@@ -63,5 +61,4 @@ class ReviewSerializer(serializers.ModelSerializer):
                 raise ValidationError({'imgs': '리뷰 이미지는 최대 3장까지만 등록 가능합니다.'})
             for img in imgs:
                 Photo.objects.create(review=review, img=img)
-
         return review
