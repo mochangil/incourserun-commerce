@@ -151,23 +151,21 @@ class OrderPaymentSerializer(serializers.Serializer):
     order = OrderSerializer(read_only=True)
 
     def validate(self, attrs):
-        imp_uid = attrs['imp_uid']
-        merchant_uid = attrs['merchant_uid']
         access_token = self.get_token()
-        print(access_token)
+        # print(access_token)
         data = self.get_imp_info(access_token, attrs['imp_uid'])
-        print(data)
+        # print(data)
 
         attrs['access_token'] = access_token
         attrs['data'] = data
-        print(attrs)
+        # print(attrs)
         return attrs
 
     def create(self, validated_data):
         data = validated_data['data']
         imp_uid = validated_data['imp_uid']
         data = self.imp_validation(data, imp_uid)
-        print("create:", data)
+        # print("create:", data)
         return data
 
     def get_token(self):  # 토큰 발급
@@ -179,14 +177,14 @@ class OrderPaymentSerializer(serializers.Serializer):
         token = requests.post(url=url, data=data)
         access_token = token.json()
         access_token = access_token['response'].get('access_token')
-        print("access_token => \n", access_token, "\n")
+        # print("access_token => \n", access_token, "\n")
         return access_token
 
     def get_imp_info(self, access_token, imp_uid):  # 결제정보 조회
         url = f"https://api.iamport.kr/payments/{imp_uid}"
         header = {'Authorization': f'Bearer {access_token}'}
         imp_inf = requests.get(url=url, headers=header)
-        print("imp_inf => \n", imp_inf)
+        # print("imp_inf => \n", imp_inf)
         if not imp_inf.ok:
             raise ValidationError("Paydata Error")
         imp_inf = imp_inf.json()
@@ -200,7 +198,7 @@ class OrderPaymentSerializer(serializers.Serializer):
         order = Order.objects.get(merchant_uid=merchant_uid)
         amounts_be_paid = order.total_paid
         res = payment_check(amounts, amounts_be_paid, status)
-        print(res)
+        # print(res)
 
         if res == "결제완료":
             order.imp_uid = imp_uid
@@ -208,12 +206,8 @@ class OrderPaymentSerializer(serializers.Serializer):
             order.save()
             message = "결제완료"
         elif res == 'unsupported features':
-            # order.delete()
-            message = "결제 실패."
             raise ValidationError("결제 실패.")
         else:
-            # order.delete()
-            message = "결제 실패"
             raise ValidationError("결제 실패")
 
         data = {
@@ -221,5 +215,4 @@ class OrderPaymentSerializer(serializers.Serializer):
             "message": message,
             "order": order
         }
-        print(data)
         return data
