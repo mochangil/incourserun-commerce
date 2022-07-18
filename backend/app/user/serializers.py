@@ -186,14 +186,29 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        # Withdrawal Object 생성
         withdrawal, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
         withdrawal.reasons = validated_data['reasons']
         withdrawal.reason_others = validated_data['reason_others']
-        # print(validated_data['user'])
         withdrawal.save()
+
         # 해당 user 비활성화
         user = User.objects.get(email=validated_data.get('user'))
-        # print(user)
         user.is_active = False
         user.save()
+
+        # 카카오 계정 연결 끊기
+        url = 'https://kauth.kakao.com/v1/user/unlink'
+        data = {
+            'target_id_type': 'user_id',
+            'target_id': validated_data['user'].username.split('@')[0]
+        }
+        headers = {
+            'Authorization': f'KakaoAK {settings.KAKAO_APP_ADMIN_KEY}'
+        }
+        response = requests.post(url=url, data=data, headers=headers)
+        print(response.content)
+        if not response.ok:
+            raise ValidationError('KAKAO UNLINK API ERROR')
+
         return withdrawal
