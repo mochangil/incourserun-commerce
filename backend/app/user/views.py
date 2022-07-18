@@ -1,23 +1,18 @@
-import requests
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView, ListAPIView
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import AllowAny
-from app.user.serializers import UserSocialLoginSerializer, UserSerializer, SocialSerializer, WithdrawalSerializer
-from django.shortcuts import redirect
-from django.db.models import Prefetch
 from django.conf import settings
-from django.contrib.auth import get_user_model
-from django_filters import rest_framework as filters
-from .models import Social, Withdrawal
-from .filters import UserFilter
-from .permissions import UserPermission
+from django.shortcuts import redirect
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+
+from .models import Withdrawal
+from .serializers import UserSocialLoginSerializer, UserSerializer, WithdrawalSerializer
 from ..cart.models import Cart
 from ..cart.serializers import CartSerializer
 from ..order.models import Order
 from ..order.serializers import OrderSerializer
 from ..review.models import Review
-from ..review.serializers import ReviewSerializer
 from ..review.paginations import ReviewPagination
+from ..review.serializers import ReviewSerializer
 
 
 class UserSocialLoginView(CreateAPIView):
@@ -28,12 +23,6 @@ class UserSocialLoginView(CreateAPIView):
     """
     serializer_class = UserSocialLoginSerializer
     permission_classes = [AllowAny]
-
-
-class UserDetailUpdateView(RetrieveUpdateAPIView):
-    User = get_user_model()
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class MeDetailUpdateDeleteView(RetrieveUpdateAPIView):
@@ -47,14 +36,14 @@ class MeCartListView(ListAPIView):
     serializer_class = CartSerializer
 
     def get_queryset(self):
-        return Cart.objects.filter(user = self.request.user)
+        return Cart.objects.filter(user=self.request.user)
 
 
 class MeOrderListView(ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user = self.request.user)
+        return Order.objects.filter(user=self.request.user)
 
 
 class MeReviewListView(ListAPIView):
@@ -62,24 +51,20 @@ class MeReviewListView(ListAPIView):
     pagination_class = ReviewPagination
 
     def get_queryset(self):
-        return Review.objects.filter(user = self.request.user)
+        return Review.objects.filter(user=self.request.user)
 
 
-class WithdrawalListCreateView(ListCreateAPIView):
-    queryset = Withdrawal.objects.all()
-    # print(queryset)
-    serializer_class = WithdrawalSerializer
-    #permission_classes = [UserPermission]
-
-
-class WithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class WithdrawalCreateView(CreateAPIView):
     queryset = Withdrawal.objects.all()
     serializer_class = WithdrawalSerializer
 
 
-def kakao_login(request):
-    client_id = settings.KAKAO_CLIENT_ID
-    redirect_uri = settings.KAKAO_REDIRECT_URI
-    return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-    )
+class KakaoLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        client_id = settings.KAKAO_CLIENT_ID
+        redirect_uri = 'http://172.30.1.17:3000'
+        return redirect(
+            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+        )

@@ -1,15 +1,17 @@
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from django.db import transaction
 from django.core.files import File
-from urllib.request import urlopen
-from tempfile import NamedTemporaryFile
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from app.user.models import User, Social, SocialKindChoices, AgeChoices, GenderChoices, Withdrawal
+
+from .models import User, Social, SocialKindChoices, AgeChoices, GenderChoices, Withdrawal
 
 
 class UserSocialLoginSerializer(serializers.Serializer):
@@ -43,12 +45,12 @@ class UserSocialLoginSerializer(serializers.Serializer):
         })
 
         if created or user.is_active == False:
-             # user 데이터 추가
-            if created: # 새로 가입한 유저인 경우
+            # user 데이터 추가
+            if created:  # 새로 가입한 유저인 경우
                 user.email = kakao_account['email']
                 user.nickname = kakao_account['profile']['nickname']
 
-            if user.is_active == False: #탈퇴했던 유저인 경우
+            if user.is_active == False:  # 탈퇴했던 유저인 경우
                 user.is_active = True
 
             if kakao_account['has_gender']:
@@ -75,7 +77,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
             img_temp.flush()
             user.avatar.save(f'avatar{user.pk}.jpg', File(img_temp))
-            
+
             user.save()
 
             # Social 정보 저장
@@ -132,8 +134,8 @@ class SocialSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
-    is_superuser = serializers.BooleanField(read_only = True)
-    is_staff = serializers.BooleanField(read_only = True)
+    is_superuser = serializers.BooleanField(read_only=True)
+    is_staff = serializers.BooleanField(read_only=True)
     social = SocialSerializer(read_only=True)
 
     class Meta:
@@ -163,7 +165,10 @@ class UserSerializer(serializers.ModelSerializer):
             "social",
         )
 
+
 class WithdrawalSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Withdrawal
         fields = (
@@ -176,19 +181,34 @@ class WithdrawalSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['user'] = self.context['request'].user
-        if attrs['reasons'] != '기타' and 'reason_others' in attrs:
+        if attrs['reasons'] != '기타' and attrs['reason_others'] is not None:
             raise ValidationError({'reason_others': "'기타'를 선택했을 때만 기타사유를 작성할 수 있습니다."})
         return attrs
 
     def create(self, validated_data):
+        # Withdrawal Object 생성
         withdrawal, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
         withdrawal.reasons = validated_data['reasons']
         withdrawal.reason_others = validated_data['reason_others']
-        # print(validated_data['user'])
         withdrawal.save()
-        #해당 user 비활성화
-        user = User.objects.get(email = validated_data.get('user'))
-        # print(user)
+
+        # 해당 user 비활성화
+        user = User.objects.get(email=validated_data.get('user'))
         user.is_active = False
         user.save()
+
+        # 카카오 계정 연결 끊기
+        url = 'https://kauth.kakao.com/v1/user/unlink'
+        data = {
+            'target_id_type': 'user_id',
+            'target_id': validated_data['user'].username.split('@')[0]
+        }
+        headers = {
+            'Authorization': f'KakaoAK {settings.KAKAO_APP_ADMIN_KEY}'
+        }
+        response = requests.post(url=url, data=data, headers=headers)
+        print(response.content)
+        if not response.ok:
+            raise ValidationError('KAKAO UNLINK API ERROR')
+
         return withdrawal
