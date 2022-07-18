@@ -13,5 +13,5 @@ urlpatterns = [
     path('/social_login', views.UserSocialLoginView.as_view()),
     path('/withdrawals', views.WithdrawalCreateView.as_view()),
     path('/token/refresh', TokenRefreshView.as_view()),
-    path('/login/kakao', views.kakao_login)
+    path('/login/kakao', views.KakaoLoginView.as_view())
 ]

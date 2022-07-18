@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
 
 from .models import Withdrawal
 from .serializers import UserSocialLoginSerializer, UserSerializer, WithdrawalSerializer
@@ -58,9 +59,12 @@ class WithdrawalCreateView(CreateAPIView):
     serializer_class = WithdrawalSerializer
 
 
-def kakao_login(request):
-    client_id = settings.KAKAO_CLIENT_ID
-    redirect_uri = 'http://172.30.1.17:3000'
-    return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-    )
+class KakaoLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        client_id = settings.KAKAO_CLIENT_ID
+        redirect_uri = 'http://172.30.1.17:3000'
+        return redirect(
+            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+        )
