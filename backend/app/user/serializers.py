@@ -191,4 +191,4 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         # print(user)
         user.is_active = False
         user.save()
-        return withdrawal_user
+        return withdrawal
