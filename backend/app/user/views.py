@@ -30,12 +30,6 @@ class UserSocialLoginView(CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class UserDetailUpdateView(RetrieveUpdateAPIView):
-    User = get_user_model()
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
 class MeDetailUpdateDeleteView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
 
@@ -65,21 +59,15 @@ class MeReviewListView(ListAPIView):
         return Review.objects.filter(user = self.request.user)
 
 
-class WithdrawalListCreateView(ListCreateAPIView):
-    queryset = Withdrawal.objects.all()
-    # print(queryset)
-    serializer_class = WithdrawalSerializer
-    #permission_classes = [UserPermission]
-
-
-class WithdrawalUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class WithdrawalCreateView(CreateAPIView):
     queryset = Withdrawal.objects.all()
     serializer_class = WithdrawalSerializer
 
 
 def kakao_login(request):
     client_id = settings.KAKAO_CLIENT_ID
-    redirect_uri = settings.KAKAO_REDIRECT_URI
+    # redirect_uri = settings.KAKAO_REDIRECT_URI
+    redirect_uri = 'http://172.30.1.17:3000'
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
     )
