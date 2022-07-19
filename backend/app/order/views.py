@@ -1,26 +1,25 @@
 from django.db.models import Exists, OuterRef
 from django.db.models import Prefetch
 from django_filters import rest_framework as filters
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 
 from .filters import OrderFilter
 from .models import Order, OrderProduct
 from .permissions import OrderProductPermission, OrderWebhookPermission
 from .serializers import OrderSerializer, OrderProductSerializer, CancelSerializer, OrderPaymentSerializer
-from ..common.permissions import IsStaff, IsOwner
+from ..common.permissions import IsOwner
 from ..review.models import Review
 
 has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
 
 
-class OrderListCreateView(ListCreateAPIView):
+class OrderCreateView(CreateAPIView):
     queryset = Order.objects.all().prefetch_related(
         Prefetch("order_products", queryset=OrderProduct.objects.annotate(has_review=Exists(has_review_subquery)))
     )
     serializer_class = OrderSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = OrderFilter
-    permission_classes = [IsStaff]
 
 
 class OrderDetailView(RetrieveAPIView):
