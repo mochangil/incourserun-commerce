@@ -11,7 +11,6 @@ from ..cart.serializers import CartSerializer
 from ..order.models import Order
 from ..order.serializers import OrderSerializer
 from ..review.models import Review
-from ..review.paginations import ReviewPagination
 from ..review.serializers import ReviewSerializer
 
 
@@ -48,7 +47,6 @@ class MeOrderListView(ListAPIView):
 
 class MeReviewListView(ListAPIView):
     serializer_class = ReviewSerializer
-    pagination_class = ReviewPagination
 
     def get_queryset(self):
         return Review.objects.filter(user=self.request.user)
@@ -65,6 +63,7 @@ class KakaoLoginView(APIView):
     def get(self, request, format=None):
         client_id = settings.KAKAO_CLIENT_ID
         redirect_uri = settings.KAKAO_REDIRECT_URI
+        print(client_id, redirect_uri)
         return redirect(
             f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
         )
