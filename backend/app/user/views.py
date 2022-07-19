@@ -64,7 +64,7 @@ class KakaoLoginView(APIView):
 
     def get(self, request, format=None):
         client_id = settings.KAKAO_CLIENT_ID
-        redirect_uri = 'http://172.30.1.17:3000'
+        redirect_uri = settings.KAKAO_REDIRECT_URI
         return redirect(
             f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
         )
