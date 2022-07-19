@@ -1,13 +1,14 @@
 import datetime
-from pathlib import Path
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
+
 # from iamport import Iamport
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "pj%2ze09(g)i^joilp-f8gvs)6ou_m036u3ejs^ky&9nse5k92"
@@ -45,7 +46,6 @@ DJANGO_APPS = [
 
 INSTALLED_APPS = LOCAL_APPS + THIRD_PARTY_APPS + DJANGO_APPS
 
-
 MIDDLEWARE = [
     "django_hosts.middleware.HostsRequestMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -58,7 +58,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "config.middleware.RequestLogMiddleware",
 ]
-
 
 TEMPLATES = [
     {
@@ -75,7 +74,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -95,7 +93,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -109,13 +106,12 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 SITE_NAME = "인코스런"
 SITE_LOGO = "img/logo.png"  # static/img/logo.png 변경
-SITE_URL = "https://incourserun.cf" # 프론트엔드 url
+SITE_URL = os.getenv('SITE_URL')  # 프론트엔드 url
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
@@ -134,10 +130,8 @@ DEFAULT_HOST = "api"
 ROOT_HOSTCONF = "config.hosts"
 ROOT_URLCONF = "config.urls.api"
 
-
 # MODEL ID
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 # JWT
 SIMPLE_JWT = {
@@ -145,7 +139,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
 }
-
 
 # DJANGO REST FRAMEWORK
 REST_FRAMEWORK = {
@@ -230,7 +223,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 # KAKAO
 KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
 KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
-KAKAO_REDIRECT_URI = SITE_URL + "/login/kakao/callback"
+KAKAO_REDIRECT_URI = os.getenv('SITE_URL') + "/login/kakao/callback"
 
 '''
 KAKAO LOGIN URL
