@@ -26,7 +26,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs['state'] not in SocialKindChoices:
             raise ValidationError({'kind': '지원하지 않는 소셜 타입입니다.'})
-
+        print('validation: ', attrs['code'], attrs['state'], attrs['redirect_uri'])
         social_user_data = self.get_social_user_data(attrs['code'], attrs['state'], attrs['redirect_uri'])
         kakao_account = social_user_data['kakao_account']
         if kakao_account['has_age_range']:
@@ -40,6 +40,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         social_user_id = validated_data['social_user_data']['id']
         kakao_account = validated_data['social_user_data']['kakao_account']
         state = validated_data['state']
+        print('social user id: ', social_user_id)
         user, created = User.objects.get_or_create(username=f'{social_user_id}@{state}.social', defaults={
             'password': make_password(None)
         })
@@ -84,7 +85,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             Social.objects.create(user=user, kind=state)
 
         refresh = RefreshToken.for_user(user)
-        print("token:", refresh.access_token)
+        print("JWT token:", refresh.access_token)
 
         return {
             'access': refresh.access_token,
@@ -97,6 +98,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         return social_user_data
 
     def get_kakao_user_data(self, code, redirect_uri):
+        print('get_kakao_user_data: ', settings.KAKAO_CLIENT_ID, settings.KAKAO_CLIENT_SECRET, redirect_uri, code)
         url = 'https://kauth.kakao.com/oauth/token'
         data = {
             'grant_type': 'authorization_code',
@@ -106,10 +108,10 @@ class UserSocialLoginSerializer(serializers.Serializer):
             'client_secret': settings.KAKAO_CLIENT_SECRET,
         }
         response = requests.post(url=url, data=data)
-        print(response.content)
         if not response.ok:
             raise ValidationError('KAKAO GET TOKEN API ERROR')
         data = response.json()
+        print('kakao token: ', data)
 
         url = 'https://kapi.kakao.com/v2/user/me'
         headers = {
@@ -119,7 +121,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         if not response.ok:
             raise ValidationError('KAKAO ME API ERROR')
         data = response.json()
-        # print(data)
+        print('me: ', data)
         return data
 
     def get_naver_user_data(self, code, redirect_uri):
