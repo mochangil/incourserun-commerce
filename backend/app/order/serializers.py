@@ -1,11 +1,10 @@
+import requests
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
 from .models import Order, OrderProduct
-from ..review.serializers import ReviewSerializer
-from django.contrib.auth import get_user_model
-from django.conf import settings
-import requests
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -17,12 +16,12 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    User = get_user_model()
     order_products = OrderProductSerializer(many=True)
     merchant_uid = serializers.CharField(read_only=True)
     imp_uid = serializers.CharField(read_only=True)
     cancel_amount = serializers.IntegerField(read_only=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    shipping_status = serializers.CharField(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Order
@@ -56,6 +55,7 @@ class OrderSerializer(serializers.ModelSerializer):
             total_price += order_product['price'] * order_product['quantity']
         if total_price != attrs['total_price']:
             raise ValidationError("total_price", "총 상품금액이 계산된 값과 일치하지 않습니다.")
+
         delivery_fee = 0
         if total_price < 30000:
             delivery_fee = 3000
@@ -63,10 +63,15 @@ class OrderSerializer(serializers.ModelSerializer):
             raise ValidationError("delivery_fee", "배송비가 일치하지 않습니다.")
         if attrs['total_price'] + attrs['delivery_fee'] != attrs['total_paid']:
             raise ValidationError("total_paid", "결제금액이 총 상품금액 + 배송비와 일치하지 않습니다.")
+
+        # 상품이 없을 경우 ValidationError 발생
+        if 'order_products' not in attrs:
+            raise ValidationError("order_products", "상품이 최소 1개 이상 있어야 합니다.")
+
         return attrs
 
     def create(self, validated_data):
-        validated_data['user']=self.context['request'].user
+        validated_data['user'] = self.context['request'].user
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
         order.merchant_uid = f'ORD{order.created_at.strftime("%y%m%d")}-{str(order.id).zfill(6)}'
@@ -74,7 +79,7 @@ class OrderSerializer(serializers.ModelSerializer):
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
         return order
-        
+
 
 class CancelSerializer(serializers.Serializer):
     merchant_uid = serializers.CharField(write_only=True)
@@ -86,11 +91,11 @@ class CancelSerializer(serializers.Serializer):
         merchant_uid = attrs['merchant_uid']
         # 결제정보 조회
         order = get_object_or_404(Order, merchant_uid=merchant_uid)
-        imp_uid, amount, cancel_amount  = order.imp_uid, order.total_paid, order.cancel_amount
+        imp_uid, amount, cancel_amount = order.imp_uid, order.total_paid, order.cancel_amount
         cancelable_amount = amount - cancel_amount
         if cancelable_amount <= 0:
-            raise ValidationError({"merchant_uid":"이미 전액환불된 주문입니다."})
-        
+            raise ValidationError({"merchant_uid": "이미 전액환불된 주문입니다."})
+
         # 결제환불 요청
         url = "https://api.iamport.kr/payments/cancel"
         data = {
@@ -106,13 +111,13 @@ class CancelSerializer(serializers.Serializer):
 
         data = response.json()
         # 응답 코드가 200이라도 응답 body의 code가 0이 아니면 환불에 실패했다는 의미
-        if data['code'] != 0: 
+        if data['code'] != 0:
             msg = data['message']
             raise ValidationError(f'환불 실패: {msg}')
         return data
 
     def create(self, validated_data):
-        response = validated_data['response'] # 환불 결과
+        response = validated_data['response']  # 환불 결과
 
         # 환불 결과 동기화
         merchant_uid = validated_data['merchant_uid']
@@ -124,7 +129,8 @@ class CancelSerializer(serializers.Serializer):
             'result': order
         }
 
-def payment_check(amounts, amounts_be_paid,status):
+
+def payment_check(amounts, amounts_be_paid, status):
     res = ""
     if amounts == amounts_be_paid:
         if status == "ready":
@@ -133,8 +139,9 @@ def payment_check(amounts, amounts_be_paid,status):
             res = "결제완료"
         else:
             res = "cancelled"
-    
+
     return res
+
 
 class OrderPaymentSerializer(serializers.Serializer):
     imp_uid = serializers.CharField(write_only=True)
@@ -148,7 +155,7 @@ class OrderPaymentSerializer(serializers.Serializer):
         merchant_uid = attrs['merchant_uid']
         access_token = self.get_token()
         print(access_token)
-        data = self.get_imp_info(access_token,attrs['imp_uid'])
+        data = self.get_imp_info(access_token, attrs['imp_uid'])
         print(data)
 
         attrs['access_token'] = access_token
@@ -156,47 +163,45 @@ class OrderPaymentSerializer(serializers.Serializer):
         print(attrs)
         return attrs
 
-
     def create(self, validated_data):
         data = validated_data['data']
         imp_uid = validated_data['imp_uid']
-        data = self.imp_validation(data,imp_uid)
+        data = self.imp_validation(data, imp_uid)
         print("create:", data)
         return data
 
-
-    def get_token(self): #토큰 발급
+    def get_token(self):  # 토큰 발급
         url = 'https://api.iamport.kr/users/getToken'
         data = {
             'imp_key': settings.IMP_KEY,
             'imp_secret': settings.IMP_SECRET
         }
-        token = requests.post(url=url,data=data)
+        token = requests.post(url=url, data=data)
         access_token = token.json()
         access_token = access_token['response'].get('access_token')
-        print("access_token => \n",access_token,"\n")
+        print("access_token => \n", access_token, "\n")
         return access_token
 
-    def get_imp_info(self,access_token,imp_uid): #결제정보 조회
+    def get_imp_info(self, access_token, imp_uid):  # 결제정보 조회
         url = f"https://api.iamport.kr/payments/{imp_uid}"
-        header = {'Authorization':f'Bearer {access_token}'}
-        imp_inf = requests.get(url=url,headers=header)
-        print("imp_inf => \n",imp_inf)
+        header = {'Authorization': f'Bearer {access_token}'}
+        imp_inf = requests.get(url=url, headers=header)
+        print("imp_inf => \n", imp_inf)
         if not imp_inf.ok:
             raise ValidationError("Paydata Error")
         imp_inf = imp_inf.json()
         data = imp_inf['response']
         return data
-    
-    def imp_validation(self,data,imp_uid): #결제정보 검증
+
+    def imp_validation(self, data, imp_uid):  # 결제정보 검증
         merchant_uid = data['merchant_uid']
         status = data['status']
         amounts = data['amount']
         order = Order.objects.get(merchant_uid=merchant_uid)
         amounts_be_paid = order.total_paid
-        res = payment_check(amounts,amounts_be_paid,status)
+        res = payment_check(amounts, amounts_be_paid, status)
         print(res)
-    
+
         if res == "결제완료":
             order.imp_uid = imp_uid
             order.shipping_status = "결제완료"
@@ -210,11 +215,11 @@ class OrderPaymentSerializer(serializers.Serializer):
             # order.delete()
             message = "결제 실패"
             raise ValidationError("결제 실패")
-    
+
         data = {
-            "status":status,
-            "message":message,
+            "status": status,
+            "message": message,
             "order": order
         }
-        print(data)  
+        print(data)
         return data
