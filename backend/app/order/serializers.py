@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -70,6 +71,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return attrs
 
+    @transaction.atomic
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         order_products = validated_data.pop('order_products')
