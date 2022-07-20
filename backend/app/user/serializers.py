@@ -26,64 +26,71 @@ class UserSocialLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs['state'] not in SocialKindChoices:
             raise ValidationError({'kind': '지원하지 않는 소셜 타입입니다.'})
-        print('validation: ', attrs['code'], attrs['state'], attrs['redirect_uri'])
+        # print('validation: ', attrs['code'], attrs['state'], attrs['redirect_uri'])
         social_user_data = self.get_social_user_data(attrs['code'], attrs['state'], attrs['redirect_uri'])
-        kakao_account = social_user_data['kakao_account']
-        if kakao_account['has_age_range']:
-            if kakao_account['age_range'] == '1~9':
-                raise ValidationError({'age_range': '10대 미만은 가입할 수 없습니다.'})
+        if social_user_data['kakao_account'].get('age_range') == '1~9':
+            raise ValidationError({'age_range': '10대 미만은 가입할 수 없습니다.'})
         attrs['social_user_data'] = social_user_data
         return attrs
 
     @transaction.atomic
     def create(self, validated_data):
-        social_user_id = validated_data['social_user_data']['id']
-        kakao_account = validated_data['social_user_data']['kakao_account']
+        user_data = validated_data['social_user_data']
+        social_user_id = user_data['id']
+        kakao_account = user_data['kakao_account']
         state = validated_data['state']
-        print('social user id: ', social_user_id)
+        # print('social user id: ', social_user_id)
+
         user, created = User.objects.get_or_create(username=f'{social_user_id}@{state}.social', defaults={
             'password': make_password(None)
         })
 
-        if created or user.is_active == False:
-            # user 데이터 추가
-            if created:  # 새로 가입한 유저인 경우
-                user.email = kakao_account['email']
-                user.nickname = kakao_account['profile']['nickname']
+        if created or user.is_active is False:  # 신규가입 / 재가입일 경우
+            # 신규가입인 경우
+            if created:
+                user.email = kakao_account.get('email')
+                user.nickname = kakao_account['profile'].get('nickname')
 
-            if user.is_active == False:  # 탈퇴했던 유저인 경우
+            # 재가입인 경우
+            if user.is_active is False:
                 user.is_active = True
 
-            if kakao_account['has_gender']:
-                if kakao_account['gender'] == 'male':
-                    user.gender = GenderChoices.MALE.value
-                if kakao_account['gender'] == 'female':
-                    user.gender = GenderChoices.FEMALE.value
-
-            if kakao_account['has_age_range']:
-                age_range = kakao_account['age_range']
-                if age_range == '10~14' or age_range == '15~19':
-                    user.age_range = AgeChoices.TEEN.value
-                elif age_range == '20~29':
-                    user.age_range = AgeChoices.TWENTY.value
-                elif age_range == '30~39':
-                    user.age_range = AgeChoices.THIRTY.value
-                elif age_range == '40~49':
-                    user.age_range = AgeChoices.FORTY.value
-                else:
-                    user.age_range = AgeChoices.OVER_FIFTY.value
-
             # 프로필 이미지 저장
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
-            img_temp.flush()
-            user.avatar.save(f'avatar{user.pk}.jpg', File(img_temp))
-
-            user.save()
+            print('profile_image_url' in kakao_account['profile'])
+            if 'profile_image_url' in kakao_account['profile']:
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(urlopen(kakao_account['profile']['profile_image_url']).read())
+                img_temp.flush()
+                user.avatar.save(f'avatar{user.pk}.jpg', File(img_temp))
 
             # Social 정보 저장
             Social.objects.create(user=user, kind=state)
 
+        # 유저 정보 업데이트
+        if kakao_account.get('gender') == 'male':
+            user.gender = GenderChoices.MALE.value
+        elif kakao_account.get('gender') == 'female':
+            user.gender = GenderChoices.FEMALE.value
+        else:
+            user.gender = None
+
+        age_range = kakao_account.get('age_range')
+        if age_range is None:
+            user.age_range = None
+        elif age_range == '10~14' or age_range == '15~19':
+            user.age_range = AgeChoices.TEEN.value
+        elif age_range == '20~29':
+            user.age_range = AgeChoices.TWENTY.value
+        elif age_range == '30~39':
+            user.age_range = AgeChoices.THIRTY.value
+        elif age_range == '40~49':
+            user.age_range = AgeChoices.FORTY.value
+        else:
+            user.age_range = AgeChoices.OVER_FIFTY.value
+
+        user.save()
+
+        # 토큰 발급
         refresh = RefreshToken.for_user(user)
         print("JWT token:", refresh.access_token)
 
