@@ -105,7 +105,7 @@ class OrderPaymentSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         access_token = get_token()
-        # print(access_token)
+        print('access_token: ', access_token)
         data = self.get_imp_info(access_token, attrs['imp_uid'])
         # print(data)
 
@@ -137,11 +137,10 @@ class OrderPaymentSerializer(serializers.Serializer):
         header = {'Authorization': f'Bearer {access_token}'}
         imp_inf = requests.get(url=url, headers=header)
         # print("imp_inf => \n", imp_inf)
+        data = imp_inf.json()
         if not imp_inf.ok:
-            raise ValidationError("Paydata Error")
-        imp_inf = imp_inf.json()
-        data = imp_inf['response']
-        return data
+            raise ValidationError({"Paydata Error": data['message']})
+        return data['response']
 
     def imp_validation(self, data, imp_uid):  # 결제정보 검증
         merchant_uid = data['merchant_uid']
@@ -158,7 +157,7 @@ class OrderPaymentSerializer(serializers.Serializer):
             order.save()
             message = "결제완료"
         elif res == 'unsupported features':
-            raise ValidationError("결제 실패.")
+            raise ValidationError({"결제 실패": "unsupported features"})
         else:
             raise ValidationError("결제 실패")
 
@@ -194,15 +193,14 @@ class CancelSerializer(serializers.Serializer):
             'checksum': cancelable_amount,
         }
         response = requests.post(url=url, data=data)
-        if not response.ok:
-            raise ValidationError('IAMPORT CANCEL API ERROR')
-            print(response.content)
-
         data = response.json()
+
+        if not response.ok:
+            raise ValidationError({'IAMPORT CANCEL API ERROR': data['message']})
+
         # 응답 코드가 200이라도 응답 body의 code가 0이 아니면 환불에 실패했다는 의미
         if data['code'] != 0:
-            msg = data['message']
-            raise ValidationError(f'환불 실패: {msg}')
+            raise ValidationError({'환불 실패': data['message']})
         return data
 
     def create(self, validated_data):
