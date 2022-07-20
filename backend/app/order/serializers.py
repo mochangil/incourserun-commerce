@@ -83,6 +83,93 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
 
+def get_token():  # 토큰 발급
+    url = 'https://api.iamport.kr/users/getToken'
+    data = {
+        'imp_key': settings.IMP_KEY,
+        'imp_secret': settings.IMP_SECRET
+    }
+    token = requests.post(url=url, data=data)
+    access_token = token.json()
+    access_token = access_token['response'].get('access_token')
+    # print("access_token => \n", access_token, "\n")
+    return access_token
+
+
+class OrderPaymentSerializer(serializers.Serializer):
+    imp_uid = serializers.CharField(write_only=True)
+    merchant_uid = serializers.CharField(write_only=True)
+    status = serializers.CharField(read_only=True)
+    message = serializers.CharField(read_only=True)
+    order = OrderSerializer(read_only=True)
+
+    def validate(self, attrs):
+        access_token = get_token()
+        # print(access_token)
+        data = self.get_imp_info(access_token, attrs['imp_uid'])
+        # print(data)
+
+        attrs['access_token'] = access_token
+        attrs['data'] = data
+        # print(attrs)
+        return attrs
+
+    def create(self, validated_data):
+        data = validated_data['data']
+        imp_uid = validated_data['imp_uid']
+        data = self.imp_validation(data, imp_uid)
+        # print("create:", data)
+        return data
+
+    def payment_check(self, amounts, amounts_be_paid, status):
+        res = ""
+        if amounts == amounts_be_paid:
+            if status == "ready":
+                res = "unsupported features"
+            elif status == "paid":
+                res = "결제완료"
+            else:
+                res = "cancelled"
+        return res
+
+    def get_imp_info(self, access_token, imp_uid):  # 결제정보 조회
+        url = f"https://api.iamport.kr/payments/{imp_uid}"
+        header = {'Authorization': f'Bearer {access_token}'}
+        imp_inf = requests.get(url=url, headers=header)
+        # print("imp_inf => \n", imp_inf)
+        if not imp_inf.ok:
+            raise ValidationError("Paydata Error")
+        imp_inf = imp_inf.json()
+        data = imp_inf['response']
+        return data
+
+    def imp_validation(self, data, imp_uid):  # 결제정보 검증
+        merchant_uid = data['merchant_uid']
+        status = data['status']
+        amounts = data['amount']
+        order = Order.objects.get(merchant_uid=merchant_uid)
+        amounts_be_paid = order.total_paid
+        res = self.payment_check(amounts, amounts_be_paid, status)
+        # print(res)
+
+        if res == "결제완료":
+            order.imp_uid = imp_uid
+            order.shipping_status = "결제완료"
+            order.save()
+            message = "결제완료"
+        elif res == 'unsupported features':
+            raise ValidationError("결제 실패.")
+        else:
+            raise ValidationError("결제 실패")
+
+        data = {
+            "status": status,
+            "message": message,
+            "order": order
+        }
+        return data
+
+
 class CancelSerializer(serializers.Serializer):
     merchant_uid = serializers.CharField(write_only=True)
     cancel_request_amount = serializers.CharField(write_only=True)
@@ -130,91 +217,3 @@ class CancelSerializer(serializers.Serializer):
         return {
             'result': order
         }
-
-
-def payment_check(amounts, amounts_be_paid, status):
-    res = ""
-    if amounts == amounts_be_paid:
-        if status == "ready":
-            res = "unsupported features"
-        elif status == "paid":
-            res = "결제완료"
-        else:
-            res = "cancelled"
-
-    return res
-
-
-class OrderPaymentSerializer(serializers.Serializer):
-    imp_uid = serializers.CharField(write_only=True)
-    merchant_uid = serializers.CharField(write_only=True)
-    status = serializers.CharField(read_only=True)
-    message = serializers.CharField(read_only=True)
-    order = OrderSerializer(read_only=True)
-
-    def validate(self, attrs):
-        access_token = self.get_token()
-        # print(access_token)
-        data = self.get_imp_info(access_token, attrs['imp_uid'])
-        # print(data)
-
-        attrs['access_token'] = access_token
-        attrs['data'] = data
-        # print(attrs)
-        return attrs
-
-    def create(self, validated_data):
-        data = validated_data['data']
-        imp_uid = validated_data['imp_uid']
-        data = self.imp_validation(data, imp_uid)
-        # print("create:", data)
-        return data
-
-    def get_token(self):  # 토큰 발급
-        url = 'https://api.iamport.kr/users/getToken'
-        data = {
-            'imp_key': settings.IMP_KEY,
-            'imp_secret': settings.IMP_SECRET
-        }
-        token = requests.post(url=url, data=data)
-        access_token = token.json()
-        access_token = access_token['response'].get('access_token')
-        # print("access_token => \n", access_token, "\n")
-        return access_token
-
-    def get_imp_info(self, access_token, imp_uid):  # 결제정보 조회
-        url = f"https://api.iamport.kr/payments/{imp_uid}"
-        header = {'Authorization': f'Bearer {access_token}'}
-        imp_inf = requests.get(url=url, headers=header)
-        # print("imp_inf => \n", imp_inf)
-        if not imp_inf.ok:
-            raise ValidationError("Paydata Error")
-        imp_inf = imp_inf.json()
-        data = imp_inf['response']
-        return data
-
-    def imp_validation(self, data, imp_uid):  # 결제정보 검증
-        merchant_uid = data['merchant_uid']
-        status = data['status']
-        amounts = data['amount']
-        order = Order.objects.get(merchant_uid=merchant_uid)
-        amounts_be_paid = order.total_paid
-        res = payment_check(amounts, amounts_be_paid, status)
-        # print(res)
-
-        if res == "결제완료":
-            order.imp_uid = imp_uid
-            order.shipping_status = "결제완료"
-            order.save()
-            message = "결제완료"
-        elif res == 'unsupported features':
-            raise ValidationError("결제 실패.")
-        else:
-            raise ValidationError("결제 실패")
-
-        data = {
-            "status": status,
-            "message": message,
-            "order": order
-        }
-        return data
