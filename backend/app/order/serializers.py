@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 
 from .models import Order, OrderProduct
 
@@ -104,6 +104,9 @@ class OrderPaymentSerializer(serializers.Serializer):
     order = OrderSerializer(read_only=True)
 
     def validate(self, attrs):
+        order = get_object_or_404(Order, merchant_uid=attrs['merchant_uid'])
+        if order.user != self.context['request'].user:
+            raise PermissionDenied("요청인과 주문자가 일치하지 않습니다.")
         access_token = get_token()
         print('access_token: ', access_token)
         data = self.get_imp_info(access_token, attrs['imp_uid'])
@@ -185,6 +188,8 @@ class CancelSerializer(serializers.Serializer):
             raise ValidationError({"merchant_uid": "이미 전액환불된 주문입니다."})
         if order.shipping_status != '결제완료':
             raise ValidationError({"merchant_uid": "결제완료 상태에서만 주문취소가 가능합니다."})
+        if order.user != self.context['request'].user:
+            raise PermissionDenied("요청인과 주문자가 일치하지 않습니다.")
 
         # 결제환불 요청
         access_token = get_token()
