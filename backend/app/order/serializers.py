@@ -183,16 +183,20 @@ class CancelSerializer(serializers.Serializer):
         cancelable_amount = amount - cancel_amount
         if cancelable_amount <= 0:
             raise ValidationError({"merchant_uid": "이미 전액환불된 주문입니다."})
+        if order.shipping_status != '결제완료':
+            raise ValidationError({"merchant_uid": "결제완료 상태에서만 주문취소가 가능합니다."})
 
         # 결제환불 요청
+        access_token = get_token()
         url = "https://api.iamport.kr/payments/cancel"
         data = {
-            'imp_uid': imp_uid,
+            'merchant_uid': merchant_uid,
             'amount': attrs['cancel_request_amount'],
             'reason': attrs['reason'],
             'checksum': cancelable_amount,
         }
-        response = requests.post(url=url, data=data)
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = requests.post(url=url, data=data, headers=headers)
         data = response.json()
 
         if not response.ok:
@@ -207,7 +211,7 @@ class CancelSerializer(serializers.Serializer):
         response = validated_data['response']  # 환불 결과
 
         # 환불 결과 동기화
-        merchant_uid = validated_data['merchant_uid']
+        merchant_uid = response['merchant_uid']
         order = Order.objects.get(merchant_uid=merchant_uid)
         order.cancel_amount = response['cancel_amount']
         order.is_cancelled = True
