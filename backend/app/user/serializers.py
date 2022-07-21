@@ -190,7 +190,7 @@ class WithdrawalSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['user'] = self.context['request'].user
-        if attrs['reasons'] != '기타' and attrs['reason_others'] is not None:
+        if attrs['reasons'] != '기타' and 'reason_others' in attrs:
             raise ValidationError({'reason_others': "'기타'를 선택했을 때만 기타사유를 작성할 수 있습니다."})
         return attrs
 
@@ -198,16 +198,17 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         # Withdrawal Object 생성
         withdrawal, created = Withdrawal.objects.get_or_create(user=validated_data['user'])
         withdrawal.reasons = validated_data['reasons']
-        withdrawal.reason_others = validated_data['reason_others']
+        withdrawal.reason_others = validated_data.get('reason_others', None)
         withdrawal.save()
 
         # 해당 user 비활성화
         user = User.objects.get(email=validated_data.get('user'))
         user.is_active = False
+        user.is_register = False
         user.save()
 
         # 카카오 계정 연결 끊기
-        url = 'https://kauth.kakao.com/v1/user/unlink'
+        url = 'https://kapi.kakao.com/v1/user/unlink'
         data = {
             'target_id_type': 'user_id',
             'target_id': validated_data['user'].username.split('@')[0]
@@ -216,7 +217,7 @@ class WithdrawalSerializer(serializers.ModelSerializer):
             'Authorization': f'KakaoAK {settings.KAKAO_APP_ADMIN_KEY}'
         }
         response = requests.post(url=url, data=data, headers=headers)
-        print(response.content)
+        print(response)
         if not response.ok:
             raise ValidationError('KAKAO UNLINK API ERROR')
 

@@ -224,6 +224,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
 KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
 KAKAO_REDIRECT_URI = os.environ.get('SITE_URL', '') + "/login/kakao/callback"
+KAKAO_APP_ADMIN_KEY = os.environ.get('KAKAO_APP_ADMIN_KEY')
 
 '''
 KAKAO LOGIN URL
