@@ -145,6 +145,7 @@ class OrderPaymentSerializer(serializers.Serializer):
             raise ValidationError({"Paydata Error": data['message']})
         return data['response']
 
+    @transaction.atomic
     def imp_validation(self, data, imp_uid):  # 결제정보 검증
         merchant_uid = data['merchant_uid']
         status = data['status']
@@ -156,8 +157,13 @@ class OrderPaymentSerializer(serializers.Serializer):
 
         if res == "결제완료":
             order.imp_uid = imp_uid
+            # 주문 상태 변경
             order.shipping_status = "결제완료"
             order.save()
+            # 주문-상품 상태 변경
+            for order_product in order.order_products.all():
+                order_product.shipping_status = "결제완료"
+                order_product.save()
             message = "결제완료"
         elif res == 'unsupported features':
             raise ValidationError({"결제 실패": "unsupported features"})
@@ -212,6 +218,7 @@ class CancelSerializer(serializers.Serializer):
             raise ValidationError({'환불 실패': data['message']})
         return data
 
+    @transaction.atomic
     def create(self, validated_data):
         response = validated_data['response']  # 환불 결과
 
@@ -221,6 +228,9 @@ class CancelSerializer(serializers.Serializer):
         order.cancel_amount = response['cancel_amount']
         order.is_cancelled = True
         order.save()
+        for order_product in order.order_products.all():
+            order_product.is_cancelled = True
+            order_product.save()
         return {
             'result': order
         }
