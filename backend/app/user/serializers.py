@@ -46,14 +46,12 @@ class UserSocialLoginSerializer(serializers.Serializer):
         })
 
         if created or user.is_active is False:  # 신규가입 / 재가입일 경우
-            # 신규가입인 경우
-            if created:
-                user.email = kakao_account.get('email')
-                user.nickname = kakao_account['profile'].get('nickname')
-
             # 재가입인 경우
             if user.is_active is False:
                 user.is_active = True
+            
+            user.email = kakao_account.get('email')
+            user.nickname = kakao_account['profile'].get('nickname')
 
             # 프로필 이미지 저장
             print('profile_image_url' in kakao_account['profile'])
@@ -201,10 +199,25 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         withdrawal.reason_others = validated_data.get('reason_others', None)
         withdrawal.save()
 
-        # 해당 user 비활성화
+        # 해당 user 비활성화, 데이터 초기화
         user = User.objects.get(email=validated_data.get('user'))
         user.is_active = False
         user.is_register = False
+
+        user.name = None
+        user.nickname = ''
+        user.phone = None
+        user.gender = None
+        user.age_range = None
+        user.zipcode = None
+        user.address = None
+        user.address_detail = None
+        user.avatar = None
+        user.agree_all_terms = False
+        user.required_terms = False
+        user.private_info_terms = False
+        user.marketing_terms = False
+
         user.save()
 
         # 카카오 계정 연결 끊기
