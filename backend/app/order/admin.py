@@ -31,7 +31,6 @@ class OrderResources(resources.ModelResource):
     total_price = Field(attribute="total_price", column_name='총 상품금액')
     delivery_fee = Field(attribute="delivery_fee", column_name='배송비')
     total_paid = Field(attribute="total_paid", column_name='결제금액')
-    is_cancelled = Field(attribute="is_cancelled", column_name='취소여부')
     username = Field(column_name='주문인', attribute="user", widget=ForeignKeyWidget(User, "name"))
 
     class Meta:
@@ -55,7 +54,6 @@ class OrderResources(resources.ModelResource):
             'total_price',
             'delivery_fee',
             'total_paid',
-            'is_cancelled'
         )
 
 
@@ -105,6 +103,7 @@ class OrderAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
         'get_user_email',
         'created_at',
         'merchant_uid',
+        'imp_uid',
         'shipping_name',
         'shipping_phone',
         'shipping_zipcode',
@@ -117,10 +116,9 @@ class OrderAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
         'total_price',
         'delivery_fee',
         'total_paid',
-        'cancel_amount',
-        'is_cancelled'
+        'cancel_amount'
     )
-    list_filter = ('shipping_status', 'is_cancelled', CreatedAtFilter)
+    list_filter = ('shipping_status', CreatedAtFilter)
     search_fields = (
         '=user__name', '^user__email', '^merchant_uid', '=shipping_name', '^shipping_phone', '=shipping_zipcode',
         'shipping_address', 'shipping_address_detail')
@@ -144,9 +142,8 @@ class OrderProductAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
         'product',
         'quantity',
         'price',
-        'shipping_status',
-        'is_cancelled'
+        'shipping_status'
     )
-    list_filter = ('product', 'shipping_status', 'is_cancelled')
+    list_filter = ('product', 'shipping_status')
     search_fields = ('^product__name', '^order__merchant_uid', '=order__user__name', '=order__shipping_zipcode',
                      'order__shipping_address',)

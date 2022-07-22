@@ -9,6 +9,7 @@ class ShippingStatusChoices(models.TextChoices):
     READY = '상품준비중', '상품준비중'
     SHIPPING = '배송중', '배송중'
     SHIPPED = '배송완료', '배송완료'
+    CANCELLED = '주문취소', '주문취소'
 
 
 class PayMethodChoices(models.TextChoices):
@@ -34,7 +35,6 @@ class Order(models.Model):
     delivery_fee = models.IntegerField(verbose_name="배송비")
     total_paid = models.IntegerField(verbose_name="결제금액", validators=[MinValueValidator(0)], default=0)
     cancel_amount = models.IntegerField(verbose_name="환불금액", validators=[MinValueValidator(0)], default=0)
-    is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
     class Meta:
         verbose_name = "주문"
@@ -52,7 +52,6 @@ class OrderProduct(models.Model):
     price = models.IntegerField(verbose_name="상품가격", validators=[MinValueValidator(0)])
     shipping_status = models.CharField(verbose_name="배송상태", choices=ShippingStatusChoices.choices, max_length=8,
                                        default="미결제")
-    is_cancelled = models.BooleanField(verbose_name="취소여부", default=False)
 
     class Meta:
         verbose_name = "주문-상품"

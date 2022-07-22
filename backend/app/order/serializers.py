@@ -13,7 +13,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProduct
-        fields = ('id', 'product', 'quantity', 'price', 'shipping_status', 'is_cancelled', 'has_review')
+        fields = ('id', 'product', 'quantity', 'price', 'shipping_status', 'has_review')
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -45,7 +45,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'delivery_fee',
             'total_paid',
             'cancel_amount',
-            'is_cancelled',
             'order_products'
         )
 
@@ -226,10 +225,10 @@ class CancelSerializer(serializers.Serializer):
         merchant_uid = response['merchant_uid']
         order = Order.objects.get(merchant_uid=merchant_uid)
         order.cancel_amount = response['cancel_amount']
-        order.is_cancelled = True
+        order.shipping_status = '주문취소'
         order.save()
         for order_product in order.order_products.all():
-            order_product.is_cancelled = True
+            order_product.shipping_status = '주문취소'
             order_product.save()
         return {
             'result': order

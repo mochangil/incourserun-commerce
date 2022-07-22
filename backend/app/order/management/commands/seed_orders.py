@@ -1,16 +1,17 @@
 import random
 from datetime import date, datetime
-from faker import Faker
-from django.core.management.base import BaseCommand
+
+from app.order.models import Order, OrderProduct
+from app.product.models import Product
+from app.user.models import User
 from django.contrib.admin.utils import flatten
+from django.core.management.base import BaseCommand
 from django.db import transaction
 from django_seed import Seed
-from app.order.models import Order, OrderProduct
-from app.user.models import User
-from app.product.models import Product
+from faker import Faker
+
 
 class Command(BaseCommand):
-
     help = "This command creates orders"
 
     def add_arguments(self, parser):
@@ -22,7 +23,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         n = options.get("number")
         all_users = User.objects.all()
-        
+
         for _ in range(n):
             seeder = Seed.seeder()
             faker = Faker('ko_KR')
@@ -43,7 +44,6 @@ class Command(BaseCommand):
                     "pay_date": date.today(),
                     "total_price": 0,
                     "delivery_fee": 0,
-                    "is_cancelled": False,
                     "created_at": datetime.now()
                 }
             )
@@ -54,16 +54,15 @@ class Command(BaseCommand):
             for pk in created_clean:
                 order = Order.objects.get(pk=pk)
                 order.merchant_uid = f'ORD{order.created_at.strftime("%y%m%d")}-{str(order.id).zfill(6)}'
-                products = random.sample(list(Product.objects.all()), random.randint(1,5))
+                products = random.sample(list(Product.objects.all()), random.randint(1, 5))
                 for product in products:
                     quantity = random.randint(1, 5)
                     OrderProduct.objects.create(
-                        order = order,
-                        product = product,
-                        quantity = quantity,
-                        price = product.price, 
-                        shipping_status = status,
-                        is_cancelled = False
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                        price=product.price,
+                        shipping_status=status
                     )
                     total_price += product.price * quantity
                 order.total_price = total_price
