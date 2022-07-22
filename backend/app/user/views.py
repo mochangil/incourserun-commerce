@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.db.models import Exists, OuterRef
+from django.db.models import Prefetch
 from django.shortcuts import redirect
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
@@ -8,7 +10,7 @@ from .models import Withdrawal
 from .serializers import UserSocialLoginSerializer, UserSerializer, WithdrawalSerializer
 from ..cart.models import Cart
 from ..cart.serializers import CartSerializer
-from ..order.models import Order
+from ..order.models import Order, OrderProduct
 from ..order.serializers import OrderSerializer
 from ..review.models import Review
 from ..review.serializers import ReviewSerializer
@@ -39,10 +41,14 @@ class MeCartListView(ListAPIView):
 
 
 class MeOrderListView(ListAPIView):
+    has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return Order.objects.filter(user=self.request.user).prefetch_related(
+            Prefetch("order_products",
+                     queryset=OrderProduct.objects.annotate(has_review=Exists(self.has_review_subquery)))
+        )
 
 
 class MeReviewListView(ListAPIView):

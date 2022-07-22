@@ -10,19 +10,15 @@ from .serializers import OrderSerializer, OrderProductSerializer, CancelSerializ
 from ..common.permissions import IsOwner
 from ..review.models import Review
 
-has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
-
 
 class OrderCreateView(CreateAPIView):
-    queryset = Order.objects.all().prefetch_related(
-        Prefetch("order_products", queryset=OrderProduct.objects.annotate(has_review=Exists(has_review_subquery)))
-    )
     serializer_class = OrderSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = OrderFilter
 
 
 class OrderDetailView(RetrieveAPIView):
+    has_review_subquery = Review.objects.filter(order_product=OuterRef('id'))
     queryset = Order.objects.all().prefetch_related(
         Prefetch("order_products", queryset=OrderProduct.objects.annotate(has_review=Exists(has_review_subquery)))
     )
