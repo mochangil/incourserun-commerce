@@ -1,8 +1,9 @@
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from django.db import transaction
+
 from .models import Review, Photo, Reply
-from django.contrib.auth import get_user_model
 
 
 class PhotoSerializer(serializers.ModelSerializer):
@@ -22,8 +23,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(read_only=True)
     reply = ReplySerializer(read_only=True)
     photos = PhotoSerializer(many=True, read_only=True)
-    has_photo = serializers.BooleanField(read_only=True)    
+    has_photo = serializers.BooleanField(read_only=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    reviewer_nickname = serializers.CharField(source='user.nickname', read_only=True)
 
     class Meta:
         model = Review
@@ -37,7 +39,8 @@ class ReviewSerializer(serializers.ModelSerializer):
             'created_at',
             'reply',
             'photos',
-            'has_photo'
+            'has_photo',
+            'reviewer_nickname'
         )
 
     def validate(self, attrs):
