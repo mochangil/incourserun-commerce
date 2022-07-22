@@ -179,8 +179,6 @@ class OrderPaymentSerializer(serializers.Serializer):
 
 class CancelSerializer(serializers.Serializer):
     merchant_uid = serializers.CharField(write_only=True)
-    cancel_request_amount = serializers.CharField(write_only=True)
-    reason = serializers.CharField(write_only=True)
     result = OrderSerializer(read_only=True)
 
     def validate(self, attrs):
@@ -201,8 +199,8 @@ class CancelSerializer(serializers.Serializer):
         url = "https://api.iamport.kr/payments/cancel"
         data = {
             'merchant_uid': merchant_uid,
-            'amount': attrs['cancel_request_amount'],
-            'reason': attrs['reason'],
+            'amount': order.total_paid,
+            'reason': '테스트',
             'checksum': cancelable_amount,
         }
         headers = {'Authorization': f'Bearer {access_token}'}
