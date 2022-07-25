@@ -1,3 +1,4 @@
+import re
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
@@ -49,7 +50,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
             # 재가입인 경우
             if user.is_active is False:
                 user.is_active = True
-            
+
             user.email = kakao_account.get('email')
             user.nickname = kakao_account['profile'].get('nickname')
 
@@ -171,6 +172,12 @@ class UserSerializer(serializers.ModelSerializer):
             "marketing_terms",
             "social",
         )
+
+    def validate(self, attrs):
+        if 'phone' in attrs:
+            if re.match("[0-9]{2,3}-[0-9]{3,4}-[0-9]{3,4}", attrs['phone']) is None:
+                raise ValidationError({'phone': '핸드폰 번호 형식이 올바르지 않습니다.'})
+        return attrs
 
 
 class WithdrawalSerializer(serializers.ModelSerializer):
