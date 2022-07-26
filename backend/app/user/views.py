@@ -37,7 +37,7 @@ class MeCartListView(ListAPIView):
     serializer_class = CartSerializer
 
     def get_queryset(self):
-        return Cart.objects.filter(user=self.request.user)
+        return Cart.objects.filter(user=self.request.user).order_by('id')
 
 
 class MeOrderListView(ListAPIView):
@@ -45,7 +45,8 @@ class MeOrderListView(ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).exclude(shipping_status="미결제").prefetch_related(
+        return Order.objects.filter(user=self.request.user).exclude(shipping_status="미결제").order_by(
+            '-created_at').prefetch_related(
             Prefetch("order_products",
                      queryset=OrderProduct.objects.annotate(has_review=Exists(self.has_review_subquery)))
         )
@@ -55,7 +56,7 @@ class MeReviewListView(ListAPIView):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        return Review.objects.filter(user=self.request.user)
+        return Review.objects.filter(user=self.request.user).order_by('-created_at')
 
 
 class WithdrawalCreateView(CreateAPIView):
