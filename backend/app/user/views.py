@@ -45,7 +45,7 @@ class MeOrderListView(ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).prefetch_related(
+        return Order.objects.filter(user=self.request.user).exclude(shipping_status="미결제").prefetch_related(
             Prefetch("order_products",
                      queryset=OrderProduct.objects.annotate(has_review=Exists(self.has_review_subquery)))
         )
