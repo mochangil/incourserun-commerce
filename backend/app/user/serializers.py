@@ -70,12 +70,10 @@ class UserSocialLoginSerializer(serializers.Serializer):
             user.gender = GenderChoices.MALE.value
         elif kakao_account.get('gender') == 'female':
             user.gender = GenderChoices.FEMALE.value
-        else:
-            user.gender = None
 
         age_range = kakao_account.get('age_range')
         if age_range is None:
-            user.age_range = None
+            pass
         elif age_range == '10~14' or age_range == '15~19':
             user.age_range = AgeChoices.TEEN.value
         elif age_range == '20~29':
