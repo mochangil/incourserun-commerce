@@ -1,6 +1,6 @@
 from rest_framework import serializers
+
 from .models import Product, Hashtag
-from ..review.serializers import ReviewSerializer
 
 
 class HashtagSerializer(serializers.ModelSerializer):
@@ -23,6 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "capacity",
             "price",
             "description",
+            "thumbnail_img",
             "product_img",
             "detail_img",
             "hashtags",
@@ -30,5 +31,3 @@ class ProductSerializer(serializers.ModelSerializer):
             "review_count",
             "created_at"
         )
-
-
