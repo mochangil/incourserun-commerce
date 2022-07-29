@@ -3,11 +3,12 @@
 ## 프로젝트 소개
 
 인코스런에서 진행한 화장품 커머스 웹 어플리케이션 프로젝트입니다.</br>
-[👉 사이트 바로가기](https://incourserun.cf/)
+👉 사이트 바로가기: https://incourserun.cf
 
-* Github Repo
-    * Frontend: https://github.com/INCOURSE-RUN/2-incourserun-commerce-fe
-    * Backend: https://github.com/INCOURSE-RUN/2-incourserun-commerce-be
+### Github Repo
+
+* Frontend: https://github.com/INCOURSE-RUN/2-incourserun-commerce-fe
+* Backend: https://github.com/INCOURSE-RUN/2-incourserun-commerce-be
 
 ## 개발 기간 및 인원
 
@@ -21,16 +22,14 @@
 ### Frontend
 
 <section>
-<img src="https://img.shields.io/badge/HTML5-E34F26?&logo=html5&logoColor=white"> 
-  <img src="https://img.shields.io/badge/CSS3-1572B6?&logo=css3&logoColor=white">
-<img src="https://img.shields.io/badge/Javascript-F7DF1E?&logo=javascript&logoColor=black" />
-<img src="https://img.shields.io/badge/Typescript-3178C6?&logo=typescript&logoColor=white" />
+<img src="https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white"/> 
+<img src="https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white"/>
+<img src="https://img.shields.io/badge/Javascript-F7DF1E?logo=javascript&logoColor=black" />
+<img src="https://img.shields.io/badge/Typescript-3178C6?logo=typescript&logoColor=white" />
 <img src="https://img.shields.io/badge/Next.js-000000?logo=Next.js&logoColor=white"/>
-<img src="https://img.shields.io/badge/Chakra%20UI-319795?&logo=Chakra%20UI&logoColor=white" />
-<img src="https://img.shields.io/badge/React-61DAFB?&logo=React&logoColor=black" />
-<img src="https://img.shields.io/badge/React Hook Form
--FF4154?logo=React
-&logoColor=white"/>
+<img src="https://img.shields.io/badge/Chakra%20UI-319795?logo=Chakra%20UI&logoColor=white" />
+<img src="https://img.shields.io/badge/React-61DAFB?logo=React&logoColor=black" />
+<img src="https://img.shields.io/badge/React Hook Form-FF4154?logo=React&logoColor=white"/>
 <img src ="https://img.shields.io/badge/Redux-764ABC?logo=redux&logoColor=white"/>
 </section>
 
@@ -55,14 +54,14 @@
 ### Common
 
 <section>
-<img src="https://img.shields.io/badge/Git-F05032?logo=Git&logoColor=white">
-<img src="https://img.shields.io/badge/Github-181717?logo=Github&logoColor=white">
-<img src="https://img.shields.io/badge/Github%20Actions-2088FF?logo=GithubActions&logoColor=white">
-<img src="https://img.shields.io/badge/Swagger-85EA2D?logo=Swagger&logoColor=black">
-<img src="https://img.shields.io/badge/Postman-FF6C37?logo=Postman&logoColor=white">
-<img src="https://img.shields.io/badge/Notion-000000?logo=Notion&logoColor=white">
-<img src="https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=white">
-<img src="https://img.shields.io/badge/Figma-F24E1E?logo=figma&logoColor=white">
+<img src="https://img.shields.io/badge/Git-F05032?logo=Git&logoColor=white" />
+<img src="https://img.shields.io/badge/Github-181717?logo=Github&logoColor=white" />
+<img src="https://img.shields.io/badge/Github%20Actions-2088FF?logo=GithubActions&logoColor=white" />
+<img src="https://img.shields.io/badge/Swagger-85EA2D?logo=Swagger&logoColor=black" />
+<img src="https://img.shields.io/badge/Postman-FF6C37?logo=Postman&logoColor=white" />
+<img src="https://img.shields.io/badge/Notion-000000?logo=Notion&logoColor=white" />
+<img src="https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=white" />
+<img src="https://img.shields.io/badge/Figma-F24E1E?logo=figma&logoColor=white" />
 </section>
 
 ## 구현 기능
@@ -102,7 +101,6 @@
 ### 📦 주문하기
 
 - 상품선택 → 바로구매 또는 장바구니 → 결제하기로 주문을 진행할 수 있습니다.
-- PC와 모바일 환경에서 모두 결제가 가능합니다.
 
 👇 장바구니 → 주문 → 메인페이지</br>
 ![](https://i.imgur.com/DoOjLfq.gif)
