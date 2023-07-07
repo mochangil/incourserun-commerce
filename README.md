@@ -3,7 +3,7 @@
 ## 프로젝트 소개
 
 인코스런에서 진행한 화장품 커머스 웹 어플리케이션 프로젝트입니다.</br>
-👉 사이트 바로가기: https://incourserun.cf
+👉 사이트 바로가기: ~~https://incourserun.cf~~ 배포 중단
 
 ### Github Repo
 
